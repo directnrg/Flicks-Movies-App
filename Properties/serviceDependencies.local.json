@@ -1,21 +1,5 @@
 {
   "dependencies": {
-    "mssql2": {
-      "ignored": "true",
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:COMP306Lab3ContextConnection"
-    },
-    "mssql3": {
-      "ignored": "true",
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:CustomLab3ContextConnection"
-    },
-    "secrets1": {
-      "secretStore": null,
-      "resourceId": null,
-      "type": "secrets.user",
-      "connectionId": null
-    },
     "mssql1": {
       "serviceConnectorResourceId": "",
       "secretStore": null,

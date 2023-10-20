@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "sqlite1": {
-      "ignored": "true",
-      "type": "sqlite"
-    },
-    "secrets1": {
-      "ignored": "true",
-      "type": "secrets",
-      "connectionId": null
-    },
     "mssql1": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:DefaultConnection"
