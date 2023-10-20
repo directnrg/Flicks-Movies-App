@@ -1,5 +1,4 @@
-﻿using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

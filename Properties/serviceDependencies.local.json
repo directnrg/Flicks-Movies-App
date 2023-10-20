@@ -1,16 +1,27 @@
 {
   "dependencies": {
-    "mssql1": {
-      "type": "mssql.local",
-      "connectionId": "ConnectionStrings:DefaultConnection"
-    },
     "mssql2": {
-      "type": "mssql.local",
+      "ignored": "true",
+      "type": "mssql",
       "connectionId": "ConnectionStrings:COMP306Lab3ContextConnection"
     },
     "mssql3": {
-      "type": "mssql.local",
+      "ignored": "true",
+      "type": "mssql",
       "connectionId": "ConnectionStrings:CustomLab3ContextConnection"
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": null,
+      "type": "secrets.user",
+      "connectionId": null
+    },
+    "mssql1": {
+      "serviceConnectorResourceId": "",
+      "secretStore": null,
+      "resourceId": null,
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:DefaultConnection"
     }
   }
 }
