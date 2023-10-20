@@ -1,6 +1,7 @@
 using _301153142_301137955_Soto_Ko_Lab3.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
 
 namespace _301153142_301137955_Soto_Ko_Lab3
 {
@@ -16,7 +17,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
