@@ -1,6 +1,7 @@
 ﻿using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
 using _301153142_301137955_Soto_Ko_Lab3.AWS;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
+using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,16 +12,21 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
     [Authorize]
     public class MovieController : Controller
     {
-        private readonly UserManager<CustomUser> _userManager;
-        public List<MovieModel> Movies { get; set; }
-
         // GET: Movie
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string? genre)
         {
-            Movies = new List<MovieModel>();
-            //Movies = await DynamoDBService.GetAllMovies();
+            IndexModel model = new();
 
-            return View(Movies);
+            if(genre == null || genre.Length == 0)
+            {
+                model.Movies = await DynamoDBService.GetAllMovies();
+            }
+            else
+            {
+                model.Movies = await DynamoDBService.GetMoviesByGenre(genre);
+            }
+
+            return View(model);
         }
 
         // GET: Movie/Details/5
