@@ -1,0 +1,18 @@
+﻿@*@page
+@model _301153142_301137955_Soto_Ko_Lab3.Views.Movie.IndexModel
+*@
+
+
+@{
+}
+
+<div class="text-center">
+    <h1 class="display-4">Search Movies!</h1>
+    <ul>
+        @foreach (var item in Model.Movies)
+        {
+            <li>@item</li>
+        }
+        
+    </ul>
+</div>
