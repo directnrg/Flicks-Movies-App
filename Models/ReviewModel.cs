@@ -6,7 +6,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
     public class ReviewModel
     {
         [DynamoDBHashKey]
-        public Guid MovieId { get; set; }
+        public string MovieId { get; set; }
 
         [DynamoDBRangeKey]
         public string UserId { get; set; }
@@ -16,9 +16,9 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string CommentTimestamp { get; set; }
         
         // rating + comment
-        public ReviewModel(Guid movieId, string userId, double rating, string comment)
+        public ReviewModel(string movieIdwithNoPrefix, string userId, double rating, string comment)
         {
-            MovieId = movieId;
+            MovieId = Constants.CAP_REVIEW + movieIdwithNoPrefix;
             UserId = userId;
             Rating = rating;
             Comment = comment;
@@ -27,18 +27,18 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         }
 
         // rating
-        public ReviewModel(Guid movieId, string userId, double rating)
+        public ReviewModel(string movieIdwithNoPrefix, string userId, double rating)
         {
-            MovieId = movieId;
+            MovieId = Constants.CAP_REVIEW + movieIdwithNoPrefix;
             UserId = userId;
             Rating = rating;
             RatingTimestamp = DateTime.UtcNow.ToString();
         }
 
         // comment
-        public ReviewModel(Guid movieId, string userId, string comment)
+        public ReviewModel(string movieIdwithNoPrefix, string userId, string comment)
         {
-            MovieId = movieId;
+            MovieId = Constants.CAP_REVIEW + movieIdwithNoPrefix;
             UserId = userId;
             Comment = comment;
             CommentTimestamp = DateTime.UtcNow.ToString();

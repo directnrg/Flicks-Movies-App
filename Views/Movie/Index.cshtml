@@ -1,18 +1,18 @@
-﻿@*@page
-@model _301153142_301137955_Soto_Ko_Lab3.Views.Movie.IndexModel
-*@
-
+﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.IndexModel
 
 @{
 }
 
 <div class="text-center">
     <h1 class="display-4">Search Movies!</h1>
+    <form method="get" action="/"> 
+        Genre: <input name="genre" />
+        <button type="submit">Search</button>
+    </form>
     <ul>
-        @foreach (var item in Model.Movies)
+        @foreach (var movie in Model.Movies)
         {
-            <li>@item</li>
+            <li>@movie.Title @movie.Genre</li>
         }
-        
     </ul>
 </div>

@@ -9,8 +9,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
     {
         public static AmazonDynamoDBClient dynamoClient;
         public static AmazonS3Client s3Client;
-        const string AccessKeyPropertyName = "ACCESS_KEY";
-        const string SecretAccessKeyPropertyName = "SECRET_ACCESS_KEY";
+        const string AccessIdPropertyName = "ACCESS_KEY";
+        const string AccessKeyPropertyName = "SECRET_ACCESS_KEY";
 
         private static string AwsAccessId { get; set; }
         private static string AwsAccessKey { get; set; }
@@ -19,8 +19,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         static AWSClients()
         {
 
-            AwsAccessId = Environment.GetEnvironmentVariable(AccessKeyPropertyName)!.Trim();
-            AwsAccessKey = Environment.GetEnvironmentVariable(SecretAccessKeyPropertyName)!.Trim();
+            AwsAccessId = Environment.GetEnvironmentVariable(AccessIdPropertyName)!.Trim();
+            AwsAccessKey = Environment.GetEnvironmentVariable(AccessKeyPropertyName)!.Trim();
             BasicAWSCredentials dynamoCredentials = new(
                 AwsAccessId,
                 AwsAccessKey
