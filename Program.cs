@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
+using dotenv.net;
 
 namespace _301153142_301137955_Soto_Ko_Lab3
 {
@@ -79,8 +80,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Movie}/{action=Index}/{id?}");
+
+            //app.MapControllerRoute(name: "blog",
+            //    pattern: "blog/{*article}",
+            //    defaults: new { controller = "Blog", action = "Article" });
+
             app.MapRazorPages();
+
+            DotEnv.Load();
 
             app.Run();
         }
