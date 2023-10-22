@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
 {
-    public class IndexModel 
+    public class IndexViewModel 
     {
         public List<MovieModel> Movies { get; set; }
         
-        public IndexModel()
+        public IndexViewModel()
         {
             Movies = new List<MovieModel>();
         }

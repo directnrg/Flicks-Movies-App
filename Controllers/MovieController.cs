@@ -15,17 +15,22 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         // GET: Movie
         public async Task<ActionResult> Index(string? genre)
         {
-            IndexModel model = new();
-
-            if(genre == null || genre.Length == 0)
-            {
-                model.Movies = await DynamoDBService.GetAllMovies();
+            IndexViewModel model = new();
+            try {
+                if (genre == null || genre.Length == 0)
+                {
+                    model.Movies = await DynamoDBService.GetAllMovies();
+                }
+                else
+                {
+                    model.Movies = await DynamoDBService.GetMoviesByGenre(genre);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                model.Movies = await DynamoDBService.GetMoviesByGenre(genre);
+                // generic error message if something fails
+                return View("Error", new ErrorViewModel { ErrorMessage = $"Failed to retrieve movies." });
             }
-
             return View(model);
         }
 

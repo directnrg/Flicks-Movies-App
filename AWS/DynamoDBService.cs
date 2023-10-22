@@ -13,10 +13,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         {
             context = new DynamoDBContext(AWSClients.dynamoClient);
         }
+
         /*
          * get the list of movie meta data items
          */
-        public static async Task<List<MovieModel>> GetAllMovies()
+        internal static async Task<List<MovieModel>> GetAllMovies()
         {
             ScanFilter scanFilter = new();
             scanFilter.AddCondition(Constants.MOVIE_ID, ScanOperator.Contains, Constants.CAP_MOVIE);
@@ -34,43 +35,30 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             return movies;
         }
 
-        //public static async Task<List<MovieModel>> GetAllMovies()
-        //{
-        //    var request = new QueryRequest
-        //    {
-        //        TableName = "YourTableName",
-        //        FilterExpression = "attribute_exists(title) OR size(title) > 0",
-        //    };
+        /* methods to be implemented */
+        public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
+        {
+            var scanConditions = new List<ScanCondition>
+            {
+                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Contains, Constants.CAP_MOVIE),
+                new ScanCondition(Constants.AVG_RATING, ScanOperator.Between, min, max)
+            };
+            // should specify the gsi used
+            return await context.ScanAsync<MovieModel>(scanConditions).GetRemainingAsync();
+        }
 
-        //    QueryResponse res = await AWSClients.dynamoClient.QueryAsync(request);
 
-        //    List<MovieModel> movies = new ();
+        public static async Task<List<ReviewModel>> GetCommentsInLast24h(string movieId)
+        {
+            var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("o");
 
-        //    foreach (var m in res.Items)
-        //    {
-        //        MovieModel movie = CreateMovieFromItem(m);
-
-        //        movies.Add(movie);
-        //    }
-        //    return movies;
-        //}
-
-        //private static MovieModel CreateMovieFromItem(Dictionary<string, AttributeValue> movieItem)
-        //{
-        //    return new MovieModel()
-        //    {
-        //        MovieId = movieItem["MovieId"].S,
-        //        UserId = movieItem["UserId"].S,
-        //        Title = movieItem["Title"].S,
-        //        Genre = movieItem["Genre"].S,
-        //        Directors = movieItem["Directors"].SS,
-        //        AvgRating =  double.Parse(movieItem["AvgRatings"].N),
-        //        NumOfRatings = int.Parse(movieItem["NumOfRatings"].N),
-        //        VideoS3Key = movieItem["VideoS3Key"].S,
-        //        ThumbnailS3Key = movieItem["ThumbnailS3Key"].S,
-        //    };
-
-        //}
-
+            var scanConditions = new List<ScanCondition>
+            {
+                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_REVIEW}{movieId}"),
+                new ScanCondition(Constants.COMMENT_TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("o"))
+            };
+            // should specify the gsi used
+            return await context.ScanAsync<ReviewModel>(scanConditions).GetRemainingAsync();
+        }
     }
 }

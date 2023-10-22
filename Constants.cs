@@ -8,5 +8,6 @@
         public static string USER_ID = "UserId";
         public static string COMMENT_TIMESTAMP = "CommentTimestamp";
         public static string GENRE = "Genre";
+        public static string AVG_RATING = "AvgRating";
     }
 }
