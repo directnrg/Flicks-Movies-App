@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Movie\IndexViewModel.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Extensions.Configuration.SystemsManager" Version="6.0.0" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.203.6" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.205.14" />
     <PackageReference Include="dotenv.net" Version="3.1.2" />
