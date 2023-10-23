@@ -3,7 +3,6 @@ using _301153142_301137955_Soto_Ko_Lab3.AWS;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +11,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
     [Authorize]
     public class MovieController : Controller
     {
+        private readonly UserManager<CustomUser> _userManager;
+        public MovieController(UserManager<CustomUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
         // GET: Movie
         public async Task<ActionResult> Index(string? genre)
         {
@@ -34,31 +39,91 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             return View(model);
         }
 
-        // GET: Movie/Details/5
-        public ActionResult Details(int id)
+        // GET: Movie/Upload
+        public ActionResult Upload()
         {
-            return View();
+            return View(new UploadViewModel());
         }
 
-        // GET: Movie/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Movie/Create
+        // POST: Movie/Upload
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Upload(UploadViewModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                string userId = _userManager.GetUserId(HttpContext.User);
+                string movieId = Guid.NewGuid().ToString();
+                MovieModel newMovie = new (movieId, userId, model.Movie.Title);
+
+                string releaseDate = model.Movie.ReleasedDate.Trim();
+                if (releaseDate.Length > 0)
+                {
+                    newMovie.ReleasedDate = releaseDate;
+                }
+
+                string genre = model.Movie.Genre.Trim();
+                if (genre.Length > 0)
+                {
+                    newMovie.Genre = genre;
+                }
+
+                newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
+
+                // save and set s3 vid, thumbnail 
+                IFormFile vidFile = model.Movie.Video;
+                string vidKey = movieId + Constants.PERIOD + vidFile.ContentType.Substring(vidFile.ContentType.IndexOf(Constants.FORWARD_SLASH)+1);
+                string vidUploadResult = await S3Service.UploadMovie(vidKey, vidFile);
+
+                if (vidUploadResult.Contains(Constants.ERROR))
+                {
+                    model.Message = vidUploadResult;
+                    return View(model);
+                }
+                newMovie.VideoS3Key = vidKey;
+
+                IFormFile thumbnailFile = model.Movie.Thumbnail;
+                string thumbnailKey = movieId + Constants.PERIOD + thumbnailFile.ContentType.Substring(thumbnailFile.ContentType.IndexOf(Constants.FORWARD_SLASH) + 1);
+                string thumbnailUploadResult = await S3Service.UploadThumbnail(thumbnailKey, thumbnailFile);
+
+                if (thumbnailUploadResult.Contains(Constants.ERROR))
+                {
+                    model.Message = thumbnailUploadResult;
+                    return View(model);
+                }
+                newMovie.ThumbnailS3Key = thumbnailKey;
+
+                // add movie data item
+                string movieUploadResult = await DynamoDBService.AddMovieItem(newMovie);
+                if (movieUploadResult.Contains(Constants.ERROR))
+                {
+                    model.Message = movieUploadResult;
+                    return View(model);
+                }
+                return RedirectToAction(nameof(Details), new { movieId = movieId });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                model.Message = $"{Constants.ERROR} while uploading movie: {ex.Message}";
+                return View(model);
             }
+        }
+
+        // GET: Movie/Details?movieId={movieId}
+        public async Task<ActionResult> Details(string? movieId)
+        {
+            DetailsViewModel model = new();
+            try
+            {
+                MovieModel movie = await DynamoDBService.GetMovieById(movieId);
+                model.Movie = movie;
+            }
+            catch (Exception ex)
+            {
+                model.Movie = new MovieModel();
+                model.Message = $"{Constants.ERROR} while loading movie details: {ex.Message}";
+            }
+            return View(model);
         }
 
         // GET: Movie/Edit/5
