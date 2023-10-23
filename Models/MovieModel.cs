@@ -18,10 +18,16 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string ReleasedDate { get; set; }
         public string ThumbnailS3Key { get; set; }
         public string VideoS3Key { get; set; }
+
+        [DynamoDBIgnore]
+        public IFormFile Thumbnail { get; set; }
+        [DynamoDBIgnore]
+        public IFormFile Video { get; set; }
+
         public MovieModel() {}
-        public MovieModel(string userId, string title)
+        public MovieModel(string movieIdwithNoPrefix, string userId, string title)
         {
-            MovieId = Constants.CAP_MOVIE + Guid.NewGuid().ToString();
+            MovieId = Constants.CAP_MOVIE + movieIdwithNoPrefix;
             Title = title;
             UserId = userId;
             NumOfRatings = 0;
