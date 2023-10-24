@@ -4,7 +4,8 @@
 
 <div>
     <hr />
-    <button>Download</button>
+    <a asp-action="Download" asp-route-movieId="@Model.Movie.MovieId.Substring(6)" class="btn btn-primary">Download</a>
+    
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Movie.Title)

@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.AWS
@@ -66,6 +67,23 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             {
                 return $"{Constants.ERROR} while uploading thumbnail: {e.Message}";
             }
+        }
+
+        internal static async Task<MemoryStream> GetMovie(string key)
+        {
+            MemoryStream movieStream = new();
+            try
+            {
+                GetObjectResponse res = await AWSClients.s3Client.GetObjectAsync(Constants.VIDEO_BUCKET_NAME, key);
+                
+                res.ResponseStream.CopyTo(movieStream);
+            }
+            catch(Exception e)
+            {
+                // only logging on the console, not to users
+                Console.WriteLine($"{Constants.ERROR} while getting movie from S3: {e.Message}");
+            }
+            return movieStream;
         }
     }
 }
