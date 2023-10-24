@@ -2,6 +2,7 @@
 using _301153142_301137955_Soto_Ko_Lab3.AWS;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
+using Amazon.S3.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -110,6 +111,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         }
 
         // GET: Movie/Details?movieId={movieId}
+        // assuming movieId without prefix
         public async Task<ActionResult> Details(string? movieId)
         {
             DetailsViewModel model = new();
@@ -124,6 +126,18 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 model.Message = $"{Constants.ERROR} while loading movie details: {ex.Message}";
             }
             return View(model);
+        }
+
+        // GET: Movie/Download?movieId={movieId}
+        // assuming movieId without prefix
+        public async Task<FileContentResult> Download(string? movieId)
+        {
+            MovieModel movie = await DynamoDBService.GetMovieById(movieId);
+
+            MemoryStream movieStream = await S3Service.GetMovie(movie.VideoS3Key);
+
+            string ext = movie.VideoS3Key.Substring(movie.VideoS3Key.LastIndexOf(Constants.PERIOD)+1);
+            return File(movieStream.ToArray(), $"video/{ext}", $"{movie.Title}{Constants.PERIOD}{ext}");
         }
 
         // GET: Movie/Edit/5

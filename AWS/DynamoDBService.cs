@@ -48,6 +48,21 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
+        internal static async Task<MovieModel> GetMovieById(string movieId)
+        {
+            try
+            {
+                QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.CAP_MOVIE + movieId);
+                var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig { Filter = filter });
+                List<MovieModel> movies = await query.GetRemainingAsync();
+                return movies.ElementAt(0);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         /* methods to be implemented */
         public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
         {
@@ -72,21 +87,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             };
             // should specify the gsi used
             return await context.ScanAsync<ReviewModel>(scanConditions).GetRemainingAsync();
-        }
-
-        internal static async Task<MovieModel> GetMovieById(string movieId)
-        {
-            try
-            {
-                QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.CAP_MOVIE + movieId);
-                var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig { Filter = filter });
-                List<MovieModel> movies = await query.GetRemainingAsync();
-                return movies.ElementAt(0);
-            }
-            catch
-            {
-                throw;
-            }
         }
     }
 }
