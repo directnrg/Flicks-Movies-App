@@ -30,9 +30,37 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         {
             ScanFilter scanFilter = new();
             scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
-            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { Filter = scanFilter });
+            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
             List<MovieModel> movies = await query.GetRemainingAsync();
             return movies;
+        }
+
+        internal static async Task<string> AddMovieItem(MovieModel movie)
+        {
+            try
+            {
+                await context.SaveAsync(movie);
+                return Constants.SUCCESS;
+            }
+            catch (Exception ex)
+            {
+                return $"{Constants.ERROR} while adding movie data: {ex.Message}";
+            }
+        }
+
+        internal static async Task<MovieModel> GetMovieById(string movieId)
+        {
+            try
+            {
+                QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.CAP_MOVIE + movieId);
+                var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig { Filter = filter });
+                List<MovieModel> movies = await query.GetRemainingAsync();
+                return movies.ElementAt(0);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /* methods to be implemented */

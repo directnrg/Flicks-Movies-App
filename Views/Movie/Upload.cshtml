@@ -1,0 +1,54 @@
+﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.UploadViewModel
+
+<h1>Upload Movie</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Upload" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Movie.Title" class="control-label"></label>
+                <input asp-for="Movie.Title" class="form-control" required />
+                <span asp-validation-for="Movie.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Movie.Genre" class="control-label">Genre (separated with ,)</label>
+                <input asp-for="Movie.Genre" class="form-control" required/>
+                <span asp-validation-for="Movie.Genre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Movie.Directors" class="control-label">Directors (separated with ,)</label>
+                <input asp-for="Movie.Directors" class="form-control" required/>
+                <span asp-validation-for="Movie.Directors" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Movie.ReleasedDate" class="control-label"></label>
+                <input asp-for="Movie.ReleasedDate" class="form-control" type="number" required/>
+                <span asp-validation-for="Movie.ReleasedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Movie.Thumbnail" class="control-label"></label><br />
+                <input asp-for="Movie.Thumbnail" type="file" class="form-control-file" required/>
+                <span asp-validation-for="Movie.Thumbnail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Movie.Video" class="control-label"></label><br />
+                <input asp-for="Movie.Video" type="file" class="form-control-file" required/>
+                <span asp-validation-for="Movie.Video" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+@if (Model.Message != string.Empty)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@Model.Message");
+        };
+    </script>
+}
