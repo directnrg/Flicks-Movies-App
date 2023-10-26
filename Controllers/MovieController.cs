@@ -19,20 +19,57 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         }
 
         // GET: Movie
-        public async Task<ActionResult> Index(string? genre)
+        public async Task<ActionResult> Index(string? genre, double? minRate, double? maxRate)
         {
             IndexViewModel model = new();
-            try {
-                if (genre == null || genre.Length == 0)
+
+            try
+            {
+                if ((genre == null || genre.Trim().Length==0) && minRate == null && maxRate == null)
                 {
                     model.Movies = await DynamoDBService.GetAllMovies();
                 }
                 else
                 {
-                    model.Movies = await DynamoDBService.GetMoviesByGenre(genre);
+                    // genre
+                    List<MovieModel> moviesByGenre = null;
+                    if (genre != null)
+                    {
+                        moviesByGenre = await DynamoDBService.GetMoviesByGenre(genre);
+                    }
+
+                    // rate
+                    List<MovieModel> moviesByRating = null;
+                    if (minRate != null || maxRate != null)
+                    {
+                        // set min, max default if not given
+                        minRate = (minRate == null) ? 0 : minRate;
+                        maxRate = (maxRate == null) ? 10 : maxRate;
+                        moviesByRating = await DynamoDBService.GetMoviesByAvgRating((double)minRate, (double)maxRate);
+
+                        // search with ratings only
+                        if (moviesByGenre == null)
+                        {
+                            model.Movies = moviesByRating;
+                        }
+                        // combine results
+                        else
+                        {
+                            model.Movies = (moviesByGenre.Where(genreItem =>
+                                moviesByRating.Any(ratingItem => ratingItem.MovieId == genreItem.MovieId)
+                            )).ToList();
+                        }
+                    }
+                    else if (moviesByGenre != null)
+                    {
+                        // search with genres only
+                        model.Movies = moviesByGenre;
+                    }
+
+                    
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // generic error message if something fails
                 return View("Error", new ErrorViewModel { ErrorMessage = $"Failed to retrieve movies." });
@@ -115,14 +152,18 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         public async Task<ActionResult> Details(string? movieId)
         {
             DetailsViewModel model = new();
+            model.Movie = new MovieModel();
             try
             {
                 MovieModel movie = await DynamoDBService.GetMovieById(movieId);
                 model.Movie = movie;
             }
-            catch (Exception ex)
+            catch (ArgumentOutOfRangeException)
             {
-                model.Movie = new MovieModel();
+                model.Message = $"{Constants.ERROR} while loading movie details: Movie not found";
+            }
+            catch (Exception ex)
+            {                
                 model.Message = $"{Constants.ERROR} while loading movie details: {ex.Message}";
             }
             return View(model);

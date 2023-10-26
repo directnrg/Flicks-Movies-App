@@ -26,15 +26,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             return movies;
         }
 
-        internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
-        {
-            ScanFilter scanFilter = new();
-            scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
-            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
-            List<MovieModel> movies = await query.GetRemainingAsync();
-            return movies;
-        }
-
         internal static async Task<string> AddMovieItem(MovieModel movie)
         {
             try
@@ -63,18 +54,26 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        /* methods to be implemented */
-        public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
+        internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
         {
-            var scanConditions = new List<ScanCondition>
-            {
-                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Contains, Constants.CAP_MOVIE),
-                new ScanCondition(Constants.AVG_RATING, ScanOperator.Between, min, max)
-            };
-            // should specify the gsi used
-            return await context.ScanAsync<MovieModel>(scanConditions).GetRemainingAsync();
+            ScanFilter scanFilter = new();
+            scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
+            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
+            List<MovieModel> movies = await query.GetRemainingAsync();
+            return movies;
         }
 
+        public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
+        {
+            ScanFilter scanFilter = new();
+            scanFilter.AddCondition(Constants.AVG_RATING, ScanOperator.Between, min, max);
+            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_AVG_RATING, Filter = scanFilter });
+            List<MovieModel> movies = await query.GetRemainingAsync();
+            return movies;
+        }
+
+
+        /* methods to be implemented */
 
         public static async Task<List<ReviewModel>> GetCommentsInLast24h(string movieId)
         {
