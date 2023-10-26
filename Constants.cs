@@ -22,8 +22,8 @@
         public static string ERROR = "ERROR";
 
         // bucket name
-        public static string VIDEO_BUCKET_NAME = "comp306-video-yk";
-        public static string THUMBNAIL_BUCKET_NAME = "comp306-thumbnail-yk";
+        public static string VIDEO_BUCKET_NAME = "comp306-lab3-sk/movies/";
+        public static string THUMBNAIL_BUCKET_NAME = "comp306-lab3-sk/thumbnails/";
         
         // GSI
         public static string GSI_GENRE = "MovieId-Genre-index";

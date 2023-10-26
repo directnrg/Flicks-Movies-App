@@ -1,0 +1,52 @@
+﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.UpdateViewModel
+
+
+@{
+    ViewData["Title"] = "Update Movie";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="success-banner" id="successBanner">
+        @TempData["SuccessMessage"]
+        <button class="close-btn" onclick="closeBanner()">x</button>
+    </div>
+}
+
+<h2>Update Movie</h2>
+
+<form asp-action="Update" method="post">
+    <input type="hidden" asp-for="Movie.MovieId" />
+
+    <div class="form-group">
+        <label asp-for="Movie.Title">Title</label>
+        <input asp-for="Movie.Title" class="form-control" />
+        <span asp-validation-for="Movie.Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Movie.Directors">Director(s)</label>
+        <input asp-for="Movie.Directors" class="form-control" />
+        <span asp-validation-for="Movie.Directors" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Genres</label>
+        @foreach (var genre in Model.MovieGenres)
+        {
+            <div class="form-check">
+                <input asp-for="SelectedGenres" value="@genre" class="form-check-input"
+                       checked="@(Model.Movie.Genre.Contains(MovieGenreExtension.EnumToReadableString(genre)) ? "checked" : "")" />
+                <label class="form-check-label" for="@genre">@(MovieGenreExtension.EnumToReadableString(genre))</label>
+            </div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Movie.ReleasedDate">Release Date</label>
+        <input asp-for="Movie.ReleasedDate" class="form-control" type="date" />
+        <span asp-validation-for="Movie.ReleasedDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
