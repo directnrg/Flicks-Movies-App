@@ -18,6 +18,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string ReleasedDate { get; set; }
         public string ThumbnailS3Key { get; set; }
         public string VideoS3Key { get; set; }
+        public string MovieUploadTimestamp { get; set; }
 
         [DynamoDBIgnore]
         public IFormFile Thumbnail { get; set; }

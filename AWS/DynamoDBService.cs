@@ -75,17 +75,17 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         /* methods to be implemented */
 
-        public static async Task<List<ReviewModel>> GetCommentsInLast24h(string movieId)
+        public static async Task<List<CommentModel>> GetCommentsInLast24h(string movieId)
         {
             var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("o");
 
             var scanConditions = new List<ScanCondition>
             {
-                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_REVIEW}{movieId}"),
+                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_COMMENT}{movieId}"),
                 new ScanCondition(Constants.COMMENT_TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("o"))
             };
             // should specify the gsi used
-            return await context.ScanAsync<ReviewModel>(scanConditions).GetRemainingAsync();
+            return await context.ScanAsync<CommentModel>(scanConditions).GetRemainingAsync();
         }
     }
 }

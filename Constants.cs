@@ -3,7 +3,8 @@
     public static class Constants
     {
         public static string CAP_MOVIE = "MOVIE#";
-        public static string CAP_REVIEW = "REVIEW#";
+        public static string CAP_COMMENT = "COMMENT#";
+        public static string CAP_RATING = "RATING#";
         public static string MOVIE_ID = "MovieId";
         public static string USER_ID = "UserId";
         public static string COMMENT_TIMESTAMP = "CommentTimestamp";
@@ -22,12 +23,14 @@
         public static string ERROR = "ERROR";
 
         // bucket name
-        public static string VIDEO_BUCKET_NAME = "comp306-video-yk";
-        public static string THUMBNAIL_BUCKET_NAME = "comp306-thumbnail-yk";
-        
+        public static string MOVIE_BUCKET_NAME = "comp306-lab3-movies-sk";
+        public static string VIDEO_FOLDER = "movies/";
+        public static string THUMBNAIL_FOLDER = "thumbnails/";
+
         // GSI
-        public static string GSI_GENRE = "MovieId-Genre-index";
-        public static string GSI_AVG_RATING = "MovieId-AvgRating-index";
+        public static string GSI_GENRE = "Genre-index";
+        public static string GSI_AVG_RATING = "AvgRating-index";
         public static string GSI_COMMENT_TIMESTAMP = "MovieId-CommentTimestamp-index";
+        public static string GSI_MOVIE_UPLOAD_TIMESTAMP = "MovieId-MovieUploadTimestamp-index";
     }
 }
