@@ -86,7 +86,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        /* methods to be implemented */
+        internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
+        {
+            ScanFilter scanFilter = new();
+            scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
+            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
+            List<MovieModel> movies = await query.GetRemainingAsync();
+            return movies;
+        }
+
         public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
         { 
             var scanConditions = new List<ScanCondition>
@@ -99,17 +107,19 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         }
 
 
-        public static async Task<List<ReviewModel>> GetCommentsInLast24h(string movieId)
+        /* methods to be implemented */
+
+        public static async Task<List<CommentModel>> GetCommentsInLast24h(string movieId)
         {
             var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("o");
 
             var scanConditions = new List<ScanCondition>
             {
-                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_REVIEW}{movieId}"),
+                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_COMMENT}{movieId}"),
                 new ScanCondition(Constants.COMMENT_TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("o"))
             };
             // should specify the gsi used
-            return await context.ScanAsync<ReviewModel>(scanConditions).GetRemainingAsync();
+            return await context.ScanAsync<CommentModel>(scanConditions).GetRemainingAsync();
         }
 
 

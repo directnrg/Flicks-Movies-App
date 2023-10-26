@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Remove="Models\Movie\IndexViewModel.cshtml.cs" />
+    <Compile Remove="Models\ReviewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

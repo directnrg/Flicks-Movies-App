@@ -5,14 +5,36 @@
 
 <div class="text-center">
     <h1 class="display-4">Search Movies!</h1>
+    @if (Model.Message != String.Empty)
+    {        
+        <p>@Model.Message</p>
+    }
     <form method="get" action="/movie"> 
-        Genre: <input name="genre" />
+        <label>Genre </label>
+        <input type="text" name="genre"/>
+        <label>Min Rate </label>
+        <input type="number" min=0 max=10 name="minRate"/>
+         <label>Max Rate </label>
+        <input type="number" min=0 max=10 name="maxRate"/>
         <input type="submit" value="Search" class="btn btn-primary"/>
     </form>
-    <ul>
-        @foreach (var movie in Model.Movies)
-        {
-            <li>@movie.Title @movie.Genre</li>
-        }
-    </ul>
+    <table width=100%>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Average Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in Model.Movies)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-movieId="@movie.MovieId.Substring(6)" >@movie.Title</a></td>
+                    <td>@movie.Genre</td>
+                    <td>@movie.AvgRating</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
