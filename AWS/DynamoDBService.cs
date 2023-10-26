@@ -86,15 +86,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
-        {
-            ScanFilter scanFilter = new();
-            scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
-            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
-            List<MovieModel> movies = await query.GetRemainingAsync();
-            return movies;
-        }
-
         public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
         { 
             var scanConditions = new List<ScanCondition>

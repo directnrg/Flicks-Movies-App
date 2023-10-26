@@ -69,7 +69,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // generic error message if something fails
                 return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Failed to retrieve movies: {ex.Message}" });
