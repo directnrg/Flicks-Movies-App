@@ -2,7 +2,7 @@
 {
     public class UploadViewModel
     {
-        public MovieModel Movie { get; set; }
+        public MovieModel Movie { get; set; } = new();
         public string Message  { get; set; } = string.Empty;
     }
 }
