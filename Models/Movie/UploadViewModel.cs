@@ -3,6 +3,7 @@
     public class UploadViewModel
     {
         public MovieModel Movie { get; set; }
+        public List<string> SelectedGenres { get; set; }
         public string Message  { get; set; } = string.Empty;
     }
 }
