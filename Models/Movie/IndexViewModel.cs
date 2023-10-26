@@ -1,4 +1,5 @@
 ﻿using _301153142_301137955_Soto_Ko_Lab3.AWS;
+using _301153142_301137955_Soto_Ko_Lab3.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,6 +9,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
     {
         public List<MovieModel> Movies { get; set; }
         public string Message { get; set; } = string.Empty;
+        public MovieGenre Genre { get; set; }
         
         public IndexViewModel()
         {
