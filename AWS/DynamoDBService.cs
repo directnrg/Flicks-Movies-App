@@ -122,24 +122,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         {
             try
             {
-                Debug.WriteLine($"Updated Movie object properties:\n" +
-                $"MovieId: {updatedMovie.MovieId}\n" +
-                $"UserId: {updatedMovie.UserId}\n" +
-                $"Title: {updatedMovie.Title}\n" +
-                $"Directors: {string.Join(", ", updatedMovie.Directors)}\n" +
-                $"Genre: {updatedMovie.Genre}\n" +
-                $"ReleasedDate: {updatedMovie.ReleasedDate}\n");
-
-                //passing movie id without prefix
+                   //passing movie id without prefix
                 var dbMovie = await GetMovieById(updatedMovie.MovieId.Substring(6));
-
-                Debug.WriteLine($"current Movie object properties:\n" +
-                $"MovieId: {dbMovie.MovieId}\n" +
-                $"UserId: {dbMovie.UserId}\n" +
-                $"Title: {dbMovie.Title}\n" +
-                $"Directors: {string.Join(", ", dbMovie.Directors)}\n" +
-                $"Genre: {dbMovie.Genre}\n" +
-                $"ReleasedDate: {dbMovie.ReleasedDate}\n");
 
                 if (dbMovie == null)
                 {
@@ -163,8 +147,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
                     dbMovie.ReleasedDate = updatedMovie.ReleasedDate;
                 }
 
+                //Saving overwrites the data of the whole object so updated dbMovie object is returned here to make sure other properties are not deleted.
                 await context.SaveAsync(dbMovie);
-
             }
 
             catch (Exception ex)
