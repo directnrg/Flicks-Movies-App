@@ -14,11 +14,12 @@
                 <span asp-validation-for="Movie.Title" class="text-danger"></span>
             </div>
             <div>
-            @foreach (MovieGenre genre in Enum.GetValues(typeof(MovieGenre)))
-            {
-                <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" />
-                <label for="@(genre)">@MovieGenreExtension.EnumToReadableString(genre)</label>  
-            }
+                <label class="control-label">Genre</label><br />
+                @foreach (MovieGenre genre in Enum.GetValues(typeof(MovieGenre)))
+                {
+                    <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" />
+                    <label for="@(genre)">@MovieGenreExtension.EnumToReadableString(genre)</label>  
+                }
             </div>
             <div class="form-group">
                 <label asp-for="Movie.Directors" class="control-label">Directors (separated with ,)</label>
@@ -47,11 +48,3 @@
         </form>
     </div>
 </div>
-@if (Model.Message != string.Empty)
-{
-    <script type="text/javascript">
-        window.onload = function () {
-            alert("@Model.Message");
-        };
-    </script>
-}

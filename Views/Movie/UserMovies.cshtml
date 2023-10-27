@@ -1,0 +1,40 @@
+﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.UserMoviesViewModel
+
+<h2>Your Uploaded Movies</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Director(s)</th>
+            <th>Released Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model.Movies)
+        {
+            <form method="post" asp-controller="Movie" asp-action="UpdateGet">
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Genre</td>
+                <td>@string.Join(", ", movie.Directors)</td>
+                <td>@movie.ReleasedDate</td>
+                <td>
+                    <input type="hidden" asp-for="@movie.MovieId" name="Movie.MovieId" />
+                    <input type="hidden" asp-for="@movie.Title" name="Movie.Title" />
+                    <input type="hidden" asp-for="@movie.Genre" name="Movie.Genre" />
+                    <!--This hidden input handles 1 or many directors-->
+                        @foreach (var director in movie.Directors)
+                        {
+                        <input type="hidden" name="Movie.Directors" value="@director" />
+                        }
+                    <input type="hidden" asp-for="@movie.ReleasedDate" name="Movie.ReleasedDate" />
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </td>
+            </tr>
+            </form>
+        }
+    </tbody>
+</table>

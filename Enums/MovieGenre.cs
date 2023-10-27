@@ -25,6 +25,7 @@
         Thriller,
         War,
         Western,
+        Suspense,
 
         // Some possible sub-genres
         Superhero, // could be seen as a subgenre of Action or Fantasy
@@ -38,5 +39,5 @@
         Mockumentary, // a blend of Comedy and Documentary
         Zombie, // can be a subgenre of Horror, Action, etc.
         Dystopian // often a subgenre of SciFi or Drama
-    }
+    }   
 }
