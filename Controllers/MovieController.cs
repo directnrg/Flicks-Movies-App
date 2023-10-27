@@ -2,10 +2,10 @@
 using _301153142_301137955_Soto_Ko_Lab3.AWS;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
-using Amazon.S3.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 {
@@ -64,13 +64,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // search with genres only
                         model.Movies = moviesByGenre;
-                    }  
+                    }
+
+                    
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // generic error message if something fails
-                return View("Error", new ErrorViewModel { ErrorMessage = $"Failed to retrieve movies." });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Failed to retrieve movies: {ex.Message}" });
             }
             return View(model);
         }
@@ -90,7 +92,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             {
                 string userId = _userManager.GetUserId(HttpContext.User);
                 string movieId = Guid.NewGuid().ToString();
-                MovieModel newMovie = new (movieId, userId, model.Movie.Title);
+                MovieModel newMovie = new(movieId, userId, model.Movie.Title);
 
                 string releaseDate = model.Movie.ReleasedDate.Trim();
                 if (releaseDate.Length > 0)
@@ -104,19 +106,18 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     newMovie.Genre += genre + Constants.COMMA;
                 }
 
-                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length-1); // remove extra comma
+                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 1); // remove extra comma
 
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 
                 // save and set s3 vid, thumbnail 
                 IFormFile vidFile = model.Movie.Video;
-                string vidKey = movieId + Constants.PERIOD + vidFile.ContentType.Substring(vidFile.ContentType.IndexOf(Constants.FORWARD_SLASH)+1);
+                string vidKey = movieId + Constants.PERIOD + vidFile.ContentType.Substring(vidFile.ContentType.IndexOf(Constants.FORWARD_SLASH) + 1);
                 string vidUploadResult = await S3Service.UploadMovie(vidKey, vidFile);
 
                 if (vidUploadResult.Contains(Constants.ERROR))
                 {
-                    model.Message = vidUploadResult;
-                    return View(model);
+                    return RedirectToAction("Error", new { errorMessage = vidUploadResult });
                 }
                 newMovie.VideoS3Key = vidKey;
 
@@ -126,24 +127,21 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
                 if (thumbnailUploadResult.Contains(Constants.ERROR))
                 {
-                    model.Message = thumbnailUploadResult;
-                    return View(model);
+                    return RedirectToAction("Error", new { errorMessage = thumbnailUploadResult });
                 }
                 newMovie.ThumbnailS3Key = thumbnailKey;
 
-                // add movie data item
+                // add updatedMovie data item
                 string movieUploadResult = await DynamoDBService.AddMovieItem(newMovie);
                 if (movieUploadResult.Contains(Constants.ERROR))
                 {
-                    model.Message = movieUploadResult;
-                    return View(model);
+                    return RedirectToAction("Error", new { errorMessage = movieUploadResult });
                 }
                 return RedirectToAction(nameof(Details), new { movieId = movieId });
             }
             catch (Exception ex)
             {
-                model.Message = $"{Constants.ERROR} while uploading movie: {ex.Message}";
-                return View(model);
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while uploading updatedMovie: {ex.Message}" });
             }
         }
 
@@ -160,11 +158,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (ArgumentOutOfRangeException)
             {
-                model.Message = $"{Constants.ERROR} while loading movie details: Movie not found";
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading updatedMovie details: Movie not found" });
+
             }
             catch (Exception ex)
             {                
-                model.Message = $"{Constants.ERROR} while loading movie details: {ex.Message}";
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading updatedMovie details: {ex.Message}" });
             }
             return View(model);
         }
@@ -181,24 +180,72 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             return File(movieStream.ToArray(), $"video/{ext}", $"{movie.Title}{Constants.PERIOD}{ext}");
         }
 
-        // GET: Movie/Edit/5
-        public ActionResult Edit(int id)
+        //GET: Movie/UserMovies
+        public async Task<ActionResult> UserMovies()
         {
-            return View();
+            UserMoviesViewModel model = new();
+            try
+            {
+                var userId = _userManager.GetUserId(User);
+                model.Movies = await DynamoDBService.GetMoviesByUserId(userId);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new {errorMessage = $"{Constants.ERROR} while getting the movies for update: {ex.Message}" });
+            }
+
+            return View(model);
         }
 
-        // POST: Movie/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        //Syncronous
+        //Movie/UpdateGet
+        public ActionResult UpdateGet(UpdateViewModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (model == null)
+                {
+                    return NotFound($"Movie Object not Found.");
+                }
+               
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while getting the updatedMovie update: {ex.Message}" });
+            }
+            return View("Update", model);
+        }
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        //Movie/UpdatePost
+        public async Task<ActionResult> UpdatePost(UpdateViewModel model)
+        {
+            try
+            {
+
+                // set genre with selected genres
+                model.Movie.Genre = model.ConvertSelectedGenresToString();
+                //converting directors to array
+                model.Movie.Directors = model.Movie.Directors.ElementAt(0)!.Split(Constants.COMMA).Select(director => director.Trim()).ToList()!;
+                //adding the user ID value before processing the update
+                var userId = _userManager.GetUserId(User);
+                model.Movie.UserId = userId;
+
+                if (model == null)
+                {
+                    return BadRequest("Movie Object is required");
+                }
+             
+                await DynamoDBService.UpdateMovie(model.Movie);
+
+                TempData["SuccessMessage"] = "Movie updated successfully!";
+                return View("Update", model); // Return mode for displaying again the Update page with movie editable data
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Updating the updatedMovie with ID: {model.Movie.MovieId} -- {ex.Message}" });
             }
         }
 
@@ -222,5 +269,18 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 return View();
             }
         }
+
+        //Error action to display errors in Error page.
+        public IActionResult Error(string? errorMessage)
+        {
+            var errorViewModel = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                ErrorMessage = errorMessage!
+            };
+
+            return View(errorViewModel);
+        }
+
     }
 }

@@ -3,6 +3,5 @@
     public class DetailsViewModel
     {
         public MovieModel Movie { get; set; }
-        public string Message { get; set; } = string.Empty;
     }
 }

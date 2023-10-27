@@ -1,0 +1,49 @@
+﻿@using _301153142_301137955_Soto_Ko_Lab3.Enums
+@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.UpdateViewModel
+
+
+@{
+    ViewData["Title"] = "Update Movie";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="success-banner" id="successBanner">
+        @TempData["SuccessMessage"]
+        <button class="close-btn" onclick="closeBanner()">x</button>
+    </div>
+}
+
+<h2>Update Movie</h2>
+<form asp-action="UpdatePost" method="post">
+    <!--To pass the movieId in form-->
+    <input type="hidden" asp-for="Movie.MovieId"/>
+    <div class="form-group">
+        <label asp-for="Movie.Title">Title</label>
+        <input asp-for="Movie.Title" class="form-control" />
+        <span asp-validation-for="Movie.Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Movie.Directors">Director(s) (separated with ,)</label>
+        <input name="Movie.Directors" value="@string.Join(", ", Model.Movie.Directors)" class="form-control"/>
+        <span asp-validation-for="Movie.Directors" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+       <label class="control-label">Genre</label><br />
+        @foreach (MovieGenre genre in Enum.GetValues(typeof(MovieGenre)))
+        {
+            <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" checked="@(Model.Movie.Genre.Contains(MovieGenreExtension.EnumToReadableString(genre)) ? true : false)" />
+            <label class="form-check-label" for="@(genre)">@MovieGenreExtension.EnumToReadableString(genre)</label>
+        }
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Movie.ReleasedDate">Release Date</label>
+        <input asp-for="Movie.ReleasedDate" class="form-control" type="text" />
+        <span asp-validation-for="Movie.ReleasedDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>

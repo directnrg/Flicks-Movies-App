@@ -27,6 +27,7 @@
                 MovieGenre.Sport => "Sport",
                 MovieGenre.Thriller => "Thriller",
                 MovieGenre.War => "War",
+                MovieGenre.Suspense => "Suspense",
                 MovieGenre.Western => "Western",
                 MovieGenre.Superhero => "Superhero",
                 MovieGenre.MartialArts => "Martial Arts",
@@ -42,6 +43,5 @@
                 _ => string.Empty,
             };
         }
-
     }
 }
