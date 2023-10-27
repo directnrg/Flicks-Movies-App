@@ -117,8 +117,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
                 if (vidUploadResult.Contains(Constants.ERROR))
                 {
-                    model.Message = vidUploadResult;
-                    return View(model);
+                    return RedirectToAction("Error", new { errorMessage = vidUploadResult });
                 }
                 newMovie.VideoS3Key = vidKey;
 
@@ -128,8 +127,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
                 if (thumbnailUploadResult.Contains(Constants.ERROR))
                 {
-                    model.Message = thumbnailUploadResult;
-                    return View(model);
+                    return RedirectToAction("Error", new { errorMessage = thumbnailUploadResult });
                 }
                 newMovie.ThumbnailS3Key = thumbnailKey;
 
@@ -137,15 +135,13 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 string movieUploadResult = await DynamoDBService.AddMovieItem(newMovie);
                 if (movieUploadResult.Contains(Constants.ERROR))
                 {
-                    model.Message = movieUploadResult;
-                    return View(model);
+                    return RedirectToAction("Error", new { errorMessage = movieUploadResult });
                 }
                 return RedirectToAction(nameof(Details), new { movieId = movieId });
             }
             catch (Exception ex)
             {
-                model.Message = $"{Constants.ERROR} while uploading updatedMovie: {ex.Message}";
-                return View(model);
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while uploading updatedMovie: {ex.Message}" });
             }
         }
 
@@ -162,11 +158,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (ArgumentOutOfRangeException)
             {
-                model.Message = $"{Constants.ERROR} while loading updatedMovie details: Movie not found";
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading updatedMovie details: Movie not found" });
+
             }
             catch (Exception ex)
             {                
-                model.Message = $"{Constants.ERROR} while loading updatedMovie details: {ex.Message}";
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading updatedMovie details: {ex.Message}" });
             }
             return View(model);
         }
@@ -200,52 +197,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             return View(model);
         }
 
-        // GET: Movie/Update/movieId
-        //updatedMovie passed here has prefix and before processing, is removed.
-
-        //public async Task<ActionResult> Update(string? movieId)
-        //{
-
-        //    const string prefix = "MOVIE#";
-
-        //    if (string.IsNullOrEmpty(movieId))
-        //    {
-        //        return BadRequest("Movie ID is required.");
-        //    }
-
-        //    // Removing the prefix from the movieId
-        //    if (movieId.StartsWith(prefix))
-        //    {
-        //        movieId = movieId.Substring(prefix.Length);
-        //    }
-
-        //    UpdateViewModel movie = new();
-
-        //    try
-        //    {
-        //        if (movie == null)
-        //        {
-        //            return NotFound($"Movie with ID {movieId} not found.");
-        //        }
-
-        //        movie.Movie = await DynamoDBService.GetMovieById(movieId);
-
-        //    } catch (Exception ex)
-        //    {
-        //        return RedirectToAction("Error", new {errorMessage = $"{Constants.ERROR} while getting the updatedMovie update: {ex.Message}" });
-        //    }
-        //    return View(movie);
-        //}
-
+        //Syncronous
+        //Movie/UpdateGet
         public ActionResult UpdateGet(UpdateViewModel model)
         {
-            Debug.WriteLine($"movie data at UpdateGet Action:\n" +
-                $"{model.Movie.MovieId}\n"+
-                $"{model.Movie.Title}\n"+
-                $"{model.Movie.Directors}\n"+
-                $"{model.Movie.Genre}\n"+
-                $"{model.Movie.ReleasedDate}\n");
-
             try
             {
                 if (model == null)
@@ -261,50 +216,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             return View("Update", model);
         }
 
-        // POST: Movie/Update/ViewModelObject
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Update(UpdateViewModel movie)
-        //{
-        //    if (string.IsNullOrEmpty(movie.Movie.MovieId))
-        //    {
-        //        return BadRequest("Movie ID is required.");
-        //    }
-        //    try
-        //    {
-        //        var existingMovie = await DynamoDBService.GetMovieById(movie.Movie.MovieId);
-
-        //        if (existingMovie == null)
-        //        {
-        //            return NotFound($"Movie with ID {movie.Movie.MovieId} not found.");
-        //        }
-
-        //        existingMovie.Title = movie.Movie.Title;
-        //        existingMovie.Directors = movie.Movie.Directors;
-        //        existingMovie.Genre = movie.Movie.Genre;
-        //        existingMovie.ReleasedDate = movie.Movie.ReleasedDate;
-
-        //        try
-        //        {
-        //            //await DynamoDBService.UpdateMovie(existingMovie);
-        //            DynamoDBService.UpdateMovie(existingMovie);
-
-        //            TempData["SuccessMessage"] = "Movie updated successfully!";
-        //            return View(movie); // Return to the same view and pass the movie data
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Updating the updatedMovie with ID: {movie.Movie.MovieId} -- {ex.Message}" });
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Finding the updatedMovie to update with ID: {movie.Movie.MovieId} -- {ex.Message}" });
-        //    }
-
-        //}
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        //Movie/UpdatePost
         public async Task<ActionResult> UpdatePost(UpdateViewModel model)
         {
             try
@@ -318,20 +233,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 var userId = _userManager.GetUserId(User);
                 model.Movie.UserId = userId;
 
-                Debug.WriteLine($"movie data at Updatepost Action:\n" +
-                    $"{model.Movie.MovieId}\n" +
-                    $"{model.Movie.Title}\n" +
-                    $"Directors: {string.Join(", ", model.Movie.Directors)}\n" +
-                    $"{model.Movie.Genre}\n" +
-                    $"{model.Movie.ReleasedDate}\n");
-
                 if (model == null)
                 {
                     return BadRequest("Movie Object is required");
                 }
              
                 await DynamoDBService.UpdateMovie(model.Movie);
-                //DynamoDBService.UpdateMovie(updatedMovie);
 
                 TempData["SuccessMessage"] = "Movie updated successfully!";
                 return View("Update", model); // Return mode for displaying again the Update page with movie editable data
@@ -363,6 +270,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
         }
 
+        //Error action to display errors in Error page.
         public IActionResult Error(string? errorMessage)
         {
             var errorViewModel = new ErrorViewModel

@@ -9,7 +9,7 @@
             <th>Genre</th>
             <th>Director(s)</th>
             <th>Released Date</th>
-            <th></th> <!-- This will be for the Edit button -->
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +25,7 @@
                     <input type="hidden" asp-for="@movie.MovieId" name="Movie.MovieId" />
                     <input type="hidden" asp-for="@movie.Title" name="Movie.Title" />
                     <input type="hidden" asp-for="@movie.Genre" name="Movie.Genre" />
+                    <!--This hidden input handles 1 or many directors-->
                         @foreach (var director in movie.Directors)
                         {
                         <input type="hidden" name="Movie.Directors" value="@director" />
