@@ -2,10 +2,10 @@
 using _301153142_301137955_Soto_Ko_Lab3.AWS;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
-using Amazon.S3.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 {
@@ -64,13 +64,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // search with genres only
                         model.Movies = moviesByGenre;
-                    }  
+                    }
+
+                    
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // generic error message if something fails
-                return View("Error", new ErrorViewModel { ErrorMessage = $"Failed to retrieve movies." });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Failed to retrieve movies: {ex.Message}" });
             }
             return View(model);
         }
@@ -98,13 +100,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     newMovie.ReleasedDate = releaseDate;
                 }
 
-                // set genre with selected genres
-                foreach (string genre in model.SelectedGenres)
+                string genre = model.Movie.Genre.Trim();
+                if (genre.Length > 0)
                 {
-                    newMovie.Genre += genre + Constants.COMMA;
+                    newMovie.Genre = genre;
                 }
-
-                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length-1); // remove extra comma
 
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 
@@ -138,7 +138,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     model.Message = movieUploadResult;
                     return View(model);
                 }
-                return RedirectToAction(nameof(Details), new { movieId = movieId });
+                return RedirectToAction(nameof(Details), new { movieId });
             }
             catch (Exception ex)
             {
@@ -181,25 +181,89 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             return File(movieStream.ToArray(), $"video/{ext}", $"{movie.Title}{Constants.PERIOD}{ext}");
         }
 
-        // GET: Movie/Edit/5
-        public ActionResult Edit(int id)
+        //GET: Movie/UserMovies
+        public async Task<ActionResult> UserMovies()
         {
-            return View();
-        }
-
-        // POST: Movie/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
+            UserMoviesViewModel model = new();
             try
             {
-                return RedirectToAction(nameof(Index));
+                var userId = _userManager.GetUserId(User);
+                model.Movies = await DynamoDBService.GetMoviesByUserId(userId);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while getting the movies for update: {ex.Message}" });
             }
+
+            return View(model);
+        }
+
+        // GET: Movie/Update/movieId
+        public async Task<ActionResult> Update(string? movieId)
+        {
+            if (string.IsNullOrEmpty(movieId))
+            {
+                return BadRequest("Movie ID is required.");
+            }
+            UpdateViewModel model = new();
+
+            try
+            {
+                if (model == null)
+                {
+                    return NotFound($"Movie with ID {movieId} not found.");
+                }
+
+                model.Movie = await DynamoDBService.GetMovieById(movieId);
+                
+            } catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while getting the movie update: {ex.Message}" });
+            }
+            return View(model);
+        }
+
+        // POST: Movie/Update/ViewModelObject
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Update(UpdateViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.Movie.MovieId))
+            {
+                return BadRequest("Movie ID is required.");
+            }
+            try
+            {
+                var existingMovie = await DynamoDBService.GetMovieById(model.Movie.MovieId);
+
+                if (existingMovie == null)
+                {
+                    return NotFound($"Movie with ID {model.Movie.MovieId} not found.");
+                }
+
+                existingMovie.Title = model.Movie.Title;
+                existingMovie.Directors = model.Movie.Directors;
+                existingMovie.Genre = model.Movie.Genre;
+                existingMovie.ReleasedDate = model.Movie.ReleasedDate;
+
+                try
+                {
+                    //await DynamoDBService.UpdateMovie(existingMovie);
+                    DynamoDBService.UpdateMovie(existingMovie);
+
+                    TempData["SuccessMessage"] = "Movie updated successfully!";
+                    return View(model); // Return to the same view and pass the model data
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Updating the movie with ID: {model.Movie.MovieId} -- {ex.Message}" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Finding the movie to update with ID: {model.Movie.MovieId} -- {ex.Message}" });
+            }
+
         }
 
         // GET: Movie/Delete/5
@@ -222,5 +286,17 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 return View();
             }
         }
+
+        public IActionResult Error(string? errorMsg)
+        {
+            var errorViewModel = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                ErrorMessage = errorMsg!
+            };
+
+            return View(errorViewModel);
+        }
+
     }
 }

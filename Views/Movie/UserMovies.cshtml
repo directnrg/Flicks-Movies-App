@@ -1,0 +1,28 @@
+﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.UserMoviesViewModel
+
+<h2>Your Uploaded Movies</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Released Date</th>
+            <th></th> <!-- This will be for the Edit button -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model.Movies)
+        {
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Genre</td>
+                <td>@movie.Directors</td>
+                <td>@movie.ReleasedDate</td>
+                <td>
+                    <a href="@Url.Action("Update", new { movieId = movie.MovieId })" class="btn btn-primary">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
