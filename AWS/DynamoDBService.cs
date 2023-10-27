@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.AWS
@@ -29,25 +30,28 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         internal static async Task<List<MovieModel>> GetMoviesByUserId(string userId)
         {
+            Debug.WriteLine($"user ID: {userId}");
+
             try
             {
                 var config = new DynamoDBOperationConfig
                 {
-                    QueryFilter = new List<ScanCondition>
-                    {
-                        new ScanCondition(Constants.USER_ID, ScanOperator.Equal, userId)
-                    }
+                    IndexName = Constants.GSI_USER_MOVIE
                 };
-                var query = context.QueryAsync<MovieModel>(config.QueryFilter, config);
-                List<MovieModel> movies = await query.GetNextSetAsync();
-                return movies;
 
-            }catch
+                // Use the userId as the hash key value for the GSI and pass the config for querying
+                var moviesQuery = context.QueryAsync<MovieModel>(userId, config);
+                List<MovieModel> movies = await moviesQuery.GetNextSetAsync();
+
+                return movies;
+            }
+            catch
             {
                 throw;
             }
-
         }
+
+
 
         internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
         {
@@ -77,8 +81,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             {
                 QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.CAP_MOVIE + movieId);
                 var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig { Filter = filter });
-                List<MovieModel> movies = await query.GetRemainingAsync();
-                return movies.ElementAt(0);
+                List<MovieModel> movie = await query.GetRemainingAsync();
+                return movie.ElementAt(0);
             }
             catch
             {
@@ -114,11 +118,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         }
 
 
-        internal static MovieModel UpdateMovie(MovieModel updatedMovie)
+        internal static async Task UpdateMovie(MovieModel updatedMovie)
         {
             try
             {
-                Debug.WriteLine($"Updated Movie properties:\n" +
+                Debug.WriteLine($"Updated Movie object properties:\n" +
                 $"MovieId: {updatedMovie.MovieId}\n" +
                 $"UserId: {updatedMovie.UserId}\n" +
                 $"Title: {updatedMovie.Title}\n" +
@@ -126,9 +130,41 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
                 $"Genre: {updatedMovie.Genre}\n" +
                 $"ReleasedDate: {updatedMovie.ReleasedDate}\n");
 
-                //await context.SaveAsync(updatedMovie);
+                //passing movie id without prefix
+                var dbMovie = await GetMovieById(updatedMovie.MovieId.Substring(6));
 
-                return updatedMovie;
+                Debug.WriteLine($"current Movie object properties:\n" +
+                $"MovieId: {dbMovie.MovieId}\n" +
+                $"UserId: {dbMovie.UserId}\n" +
+                $"Title: {dbMovie.Title}\n" +
+                $"Directors: {string.Join(", ", dbMovie.Directors)}\n" +
+                $"Genre: {dbMovie.Genre}\n" +
+                $"ReleasedDate: {dbMovie.ReleasedDate}\n");
+
+                if (dbMovie == null)
+                {
+                    throw new Exception("Movie not found");
+                }
+
+                // safety check to update only properties provided if they are not empty.
+                if (updatedMovie.Title != null)
+                {
+                    dbMovie.Title = updatedMovie.Title;
+                }
+                if (updatedMovie.Directors != null)
+                {
+                    dbMovie.Directors = updatedMovie.Directors;
+                }
+                if (updatedMovie.Genre != null) {
+                    dbMovie.Genre = updatedMovie.Genre;
+                }
+                if (updatedMovie.ReleasedDate != null)
+                {
+                    dbMovie.ReleasedDate = updatedMovie.ReleasedDate;
+                }
+
+                await context.SaveAsync(dbMovie);
+
             }
 
             catch (Exception ex)
