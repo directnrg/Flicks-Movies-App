@@ -38,5 +38,5 @@
         Mockumentary, // a blend of Comedy and Documentary
         Zombie, // can be a subgenre of Horror, Action, etc.
         Dystopian // often a subgenre of SciFi or Drama
-    }
+    }   
 }

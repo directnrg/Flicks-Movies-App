@@ -11,9 +11,5 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
         public string Message { get; set; } = string.Empty;
         public MovieGenre Genre { get; set; }
         
-        public IndexViewModel()
-        {
-            Movies = new List<MovieModel>();
-        }
     }
 }
