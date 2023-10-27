@@ -6,10 +6,7 @@
 
 <div class="text-center">
     <h1 class="display-4">Search Movies!</h1>
-    @if (Model.Message != String.Empty)
-    {        
-        <p>@Model.Message</p>
-    }
+
     <form method="get" action="/movie"> 
         <label>Genre </label>
         <select asp-for="Genre"name="genre">

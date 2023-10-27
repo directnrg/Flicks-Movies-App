@@ -32,5 +32,6 @@
         public static string GSI_AVG_RATING = "AvgRating-index";
         public static string GSI_COMMENT_TIMESTAMP = "MovieId-CommentTimestamp-index";
         public static string GSI_MOVIE_UPLOAD_TIMESTAMP = "MovieId-MovieUploadTimestamp-index";
+        public static string GSI_USER_MOVIE = "UserId-MovieId-index";
     }
 }

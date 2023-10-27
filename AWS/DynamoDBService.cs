@@ -2,12 +2,13 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using System.Diagnostics;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 {
     public static class DynamoDBService
     {
-        static DynamoDBContext context;
+        readonly static DynamoDBContext context;
 
         static DynamoDBService()
         {
@@ -22,6 +23,37 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             ScanFilter scanFilter = new();
             scanFilter.AddCondition(Constants.MOVIE_ID, ScanOperator.Contains, Constants.CAP_MOVIE);
             var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig{ Filter= scanFilter});
+            List<MovieModel> movies = await query.GetRemainingAsync();
+            return movies;
+        }
+
+        internal static async Task<List<MovieModel>> GetMoviesByUserId(string userId)
+        {
+            try
+            {
+                var config = new DynamoDBOperationConfig
+                {
+                    QueryFilter = new List<ScanCondition>
+                    {
+                        new ScanCondition(Constants.USER_ID, ScanOperator.Equal, userId)
+                    }
+                };
+                var query = context.QueryAsync<MovieModel>(config.QueryFilter, config);
+                List<MovieModel> movies = await query.GetNextSetAsync();
+                return movies;
+
+            }catch
+            {
+                throw;
+            }
+
+        }
+
+        internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
+        {
+            ScanFilter scanFilter = new();
+            scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
+            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
             List<MovieModel> movies = await query.GetRemainingAsync();
             return movies;
         }
@@ -54,27 +86,20 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        /* search movies */
-        internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
-        {
-            ScanFilter scanFilter = new();
-            scanFilter.AddCondition(Constants.GENRE, ScanOperator.Contains, genre);
-            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_GENRE, Filter = scanFilter });
-            List<MovieModel> movies = await query.GetRemainingAsync();
-            return movies;
-        }
-
         public static async Task<List<MovieModel>> GetMoviesByAvgRating(double min, double max)
-        {
-            ScanFilter scanFilter = new();
-            scanFilter.AddCondition(Constants.AVG_RATING, ScanOperator.Between, min, max);
-            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig { IndexName = Constants.GSI_AVG_RATING, Filter = scanFilter });
-            List<MovieModel> movies = await query.GetRemainingAsync();
-            return movies;
+        { 
+            var scanConditions = new List<ScanCondition>
+            {
+                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Contains, Constants.CAP_MOVIE),
+                new ScanCondition(Constants.AVG_RATING, ScanOperator.Between, min, max)
+            };
+            // should specify the gsi used
+            return await context.ScanAsync<MovieModel>(scanConditions).GetRemainingAsync();
         }
 
 
         /* methods to be implemented */
+
         public static async Task<List<CommentModel>> GetCommentsInLast24h(string movieId)
         {
             var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("o");
@@ -86,6 +111,32 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             };
             // should specify the gsi used
             return await context.ScanAsync<CommentModel>(scanConditions).GetRemainingAsync();
+        }
+
+
+        internal static MovieModel UpdateMovie(MovieModel updatedMovie)
+        {
+            try
+            {
+                Debug.WriteLine($"Updated Movie properties:\n" +
+                $"MovieId: {updatedMovie.MovieId}\n" +
+                $"UserId: {updatedMovie.UserId}\n" +
+                $"Title: {updatedMovie.Title}\n" +
+                $"Directors: {string.Join(", ", updatedMovie.Directors)}\n" +
+                $"Genre: {updatedMovie.Genre}\n" +
+                $"ReleasedDate: {updatedMovie.ReleasedDate}\n");
+
+                //await context.SaveAsync(updatedMovie);
+
+                return updatedMovie;
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating movie: {ex.Message}");
+                throw;
+            }
+
         }
     }
 }
