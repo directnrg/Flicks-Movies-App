@@ -18,16 +18,16 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             // validate if video file
             if (!video.ContentType.Contains(Constants.VIDEO.ToLower()))
             {
-                return $"{Constants.ERROR} while uploading movie: Movie file should be a video";
+                return $"{Constants.ERROR} while uploading movie: Movie file should be a video.";
             }
 
             try
             {
-                ////check if video bucket exists
-                //if (!await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(AWSClients.s3Client, Constants.VIDEO_BUCKET_NAME))
-                //{
-                //    await AWSClients.s3Client.PutBucketAsync(Constants.VIDEO_BUCKET_NAME);
-                //}
+                //check if video bucket exists
+                if (!await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(AWSClients.s3Client, Constants.MOVIE_BUCKET_NAME))
+                {
+                    await AWSClients.s3Client.PutBucketAsync(Constants.MOVIE_BUCKET_NAME);
+                }
 
                 //upload movie
                 Stream fileStream = video.OpenReadStream();                
@@ -46,7 +46,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             // validate if thumbnail file
             if (!thumbnail.ContentType.Contains(Constants.IMAGE.ToLower()))
             {
-                return $"{Constants.ERROR} while uploading thumbnail file: Thumbnail file should be a image";
+                return $"{Constants.ERROR} while uploading thumbnail file: Thumbnail file should be a image.";
             }
 
             try
@@ -74,7 +74,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             MemoryStream movieStream = new();
             try
             {
-                GetObjectResponse res = await AWSClients.s3Client.GetObjectAsync(Constants.MOVIE_BUCKET_NAME, key);
+                GetObjectResponse res = await AWSClients.s3Client.GetObjectAsync(Constants.MOVIE_BUCKET_NAME, Constants.VIDEO_FOLDER+key);
                 
                 res.ResponseStream.CopyTo(movieStream);
             }

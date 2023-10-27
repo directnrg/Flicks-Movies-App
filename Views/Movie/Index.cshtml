@@ -1,4 +1,5 @@
-﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.IndexViewModel
+﻿@using _301153142_301137955_Soto_Ko_Lab3.Enums
+@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.IndexViewModel
 
 @{
 }
@@ -11,7 +12,13 @@
     }
     <form method="get" action="/movie"> 
         <label>Genre </label>
-        <input type="text" name="genre"/>
+        <select asp-for="Genre"name="genre">
+            @foreach (MovieGenre genre in Enum.GetValues(typeof(MovieGenre)))
+            {
+                <option value="@genre">@MovieGenreExtension.EnumToReadableString(genre)</option>
+            }
+            <option selected="selected" value="">Please select</option>
+        </select>
         <label>Min Rate </label>
         <input type="number" min=0 max=10 name="minRate"/>
          <label>Max Rate </label>

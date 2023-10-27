@@ -64,9 +64,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // search with genres only
                         model.Movies = moviesByGenre;
-                    }
-
-                    
+                    }  
                 }
             }
             catch (Exception)
@@ -100,11 +98,13 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     newMovie.ReleasedDate = releaseDate;
                 }
 
-                string genre = model.Movie.Genre.Trim();
-                if (genre.Length > 0)
+                // set genre with selected genres
+                foreach (string genre in model.SelectedGenres)
                 {
-                    newMovie.Genre = genre;
+                    newMovie.Genre += genre + Constants.COMMA;
                 }
+
+                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length-1); // remove extra comma
 
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 

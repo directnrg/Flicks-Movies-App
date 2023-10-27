@@ -54,6 +54,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
+        /* search movies */
         internal static async Task<List<MovieModel>> GetMoviesByGenre(string genre)
         {
             ScanFilter scanFilter = new();
@@ -74,7 +75,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
 
         /* methods to be implemented */
-
         public static async Task<List<CommentModel>> GetCommentsInLast24h(string movieId)
         {
             var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("o");
