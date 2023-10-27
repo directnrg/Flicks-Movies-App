@@ -16,6 +16,7 @@
 
         public static char FORWARD_SLASH = '/';
         public static char COMMA = ',';
+        public static string COMMA_DELIMITER = ", ";
         public static string PERIOD = ".";
 
         // msg related
@@ -33,5 +34,9 @@
         public static string GSI_COMMENT_TIMESTAMP = "MovieId-CommentTimestamp-index";
         public static string GSI_MOVIE_UPLOAD_TIMESTAMP = "MovieId-MovieUploadTimestamp-index";
         public static string GSI_USER_MOVIE = "UserId-MovieId-index";
+
+        // action
+        public static string UPDATE = "update";
+        public static string DELETE = "delete";
     }
 }

@@ -14,7 +14,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
                 return string.Empty;
 
             IEnumerable<string> readableGenres = SelectedGenres.Select(genre => MovieGenreExtension.EnumToReadableString(genre));
-            return string.Join(", ", readableGenres);
+            return string.Join(Constants.COMMA_DELIMITER, readableGenres);
         }
     }
 }

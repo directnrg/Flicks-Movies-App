@@ -103,10 +103,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 // set genre with selected genres
                 foreach (string genre in model.SelectedGenres)
                 {
-                    newMovie.Genre += genre + Constants.COMMA;
+                    newMovie.Genre += genre + Constants.COMMA_DELIMITER;
                 }
 
-                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 1); // remove extra comma
+                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 2); // remove extra comma
 
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 
@@ -141,7 +141,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while uploading updatedMovie: {ex.Message}" });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while uploading movie: {ex.Message}" });
             }
         }
 
@@ -158,12 +158,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (ArgumentOutOfRangeException)
             {
-                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading updatedMovie details: Movie not found" });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading movie details: Movie not found" });
 
             }
             catch (Exception ex)
             {                
-                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading updatedMovie details: {ex.Message}" });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while loading movie details: {ex.Message}" });
             }
             return View(model);
         }
@@ -191,15 +191,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", new {errorMessage = $"{Constants.ERROR} while getting the movies for update: {ex.Message}" });
+                return RedirectToAction("Error", new {errorMessage = $"{Constants.ERROR} while getting the movie for update: {ex.Message}" });
             }
 
             return View(model);
         }
 
         //Syncronous
-        //Movie/UpdateGet
-        public ActionResult UpdateGet(UpdateViewModel model)
+        //Movie/GetAction
+        public async Task<ActionResult> GetActionAsync(UpdateViewModel model, string action)
         {
             try
             {
@@ -207,15 +207,36 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 {
                     return NotFound($"Movie Object not Found.");
                 }
-               
+
+                if (action == Constants.UPDATE)
+                {
+                    return View("Update", model);
+                }
+                else if (action == Constants.DELETE)
+                {
+                    string  deleteResult = await Delete(model.Movie);
+                    if (deleteResult.Contains(Constants.ERROR))
+                    {
+                        TempData["ErrorMessage"] = deleteResult;
+                    }
+                    else
+                    {
+                        TempData["SuccessMessage"] = "Movie deleted successfully!";
+                    }
+                    
+                    return RedirectToAction(nameof(UserMovies));
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Details));
+                }
+                
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while getting the updatedMovie update: {ex.Message}" });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} while getting the movie: {ex.Message}" });
             }
-            return View("Update", model);
         }
-
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -224,7 +245,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         {
             try
             {
-
                 // set genre with selected genres
                 model.Movie.Genre = model.ConvertSelectedGenresToString();
                 //converting directors to array
@@ -245,28 +265,44 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Updating the updatedMovie with ID: {model.Movie.MovieId} -- {ex.Message}" });
+                return RedirectToAction("Error", new { errorMessage = $"{Constants.ERROR} Updating the movie with ID: {model.Movie.MovieId} -- {ex.Message}" });
             }
         }
 
-        // GET: Movie/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Movie/Delete/5
+        // POST: Movie/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<string> Delete(MovieModel movie)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                // Delete s3 bucket obj(vid, thumbnail) 
+                string deleteS3MovieResult = await S3Service.DeleteMovie(movie.VideoS3Key);
+                if (deleteS3MovieResult != Constants.SUCCESS)
+                {
+                    return deleteS3MovieResult;
+                }
+                    
+                string deleteS3ThumbnailResult = await S3Service.DeleteThumbnail(movie.ThumbnailS3Key);
+                if (deleteS3ThumbnailResult != Constants.SUCCESS)
+                {
+                    return deleteS3ThumbnailResult;
+                }
+
+                // Delete comments, ratings => RATING#movieId, COMMENT#movidId
+
+                // Delete meta data row => MOVIE#movieId 
+                string deleteMovieDataResult = await DynamoDBService.DeleteMovie(movie);
+                if (deleteMovieDataResult != Constants.SUCCESS)
+                {
+                    return deleteMovieDataResult;
+                }
+
+                return Constants.SUCCESS;
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return $"{Constants.ERROR} while deleting movie: {e.Message}";
             }
         }
 
