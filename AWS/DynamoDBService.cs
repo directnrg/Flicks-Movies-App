@@ -140,6 +140,19 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         }
 
+        internal static async Task<string> DeleteMovie(MovieModel movieToDelete)
+        {
+            try
+            {
+                await context.DeleteAsync(movieToDelete);
+                return Constants.SUCCESS;
+            }
+            catch (Exception ex)
+            {
+                return $"{Constants.ERROR} while deleting movie data: {ex.Message}";
+            }
+        }
+
         /* methods to be implemented */
         public static async Task<List<CommentModel>> GetCommentsInLast24h(string movieId)
         {

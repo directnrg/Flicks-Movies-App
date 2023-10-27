@@ -26,6 +26,15 @@ body {
     position: relative; 
 }
 
+.error-banner {
+    background-color: #CD2F43;
+    color: white;
+    padding: 12px 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+    position: relative;
+}
+
 .close-btn {
     position: absolute; 
     right: 10px; 

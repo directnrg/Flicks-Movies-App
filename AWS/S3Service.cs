@@ -51,11 +51,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
             try
             {
-                ////check if thumbnail bucket exists
-                //if (!await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(AWSClients.s3Client, Constants.THUMBNAIL_BUCKET_NAME))
-                //{
-                //    await AWSClients.s3Client.PutBucketAsync(Constants.THUMBNAIL_BUCKET_NAME);
-                //}
+                //check if thumbnail bucket exists
+                if (!await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(AWSClients.s3Client, Constants.MOVIE_BUCKET_NAME))
+                {
+                    await AWSClients.s3Client.PutBucketAsync(Constants.MOVIE_BUCKET_NAME);
+                }
 
                 //upload thumbnail
                 Stream fileStream = thumbnail.OpenReadStream();
@@ -84,6 +84,34 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
                 Console.WriteLine($"{Constants.ERROR} while getting movie from S3: {e.Message}");
             }
             return movieStream;
+        }
+
+        internal static async Task<string> DeleteMovie(string key)
+        {
+            try
+            {
+                await AWSClients.s3Client.DeleteObjectAsync(Constants.MOVIE_BUCKET_NAME, Constants.VIDEO_FOLDER + key);
+
+                return Constants.SUCCESS;
+            }
+            catch (Exception e)
+            {
+                return $"{Constants.ERROR} while deleting movie: {e.Message}";
+            }
+        }
+
+        internal static async Task<string> DeleteThumbnail(string key)
+        {
+            try
+            {
+                await AWSClients.s3Client.DeleteObjectAsync(Constants.MOVIE_BUCKET_NAME, Constants.THUMBNAIL_FOLDER + key);
+
+                return Constants.SUCCESS;
+            }
+            catch (Exception e)
+            {
+                return $"{Constants.ERROR} while deleting thumbnail: {e.Message}";
+            }
         }
     }
 }
