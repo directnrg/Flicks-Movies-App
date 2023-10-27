@@ -92,7 +92,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             {
                 string userId = _userManager.GetUserId(HttpContext.User);
                 string movieId = Guid.NewGuid().ToString();
-                MovieModel newMovie = new (movieId, userId, model.Movie.Title);
+                MovieModel newMovie = new(movieId, userId, model.Movie.Title);
 
                 string releaseDate = model.Movie.ReleasedDate.Trim();
                 if (releaseDate.Length > 0)
@@ -100,17 +100,19 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     newMovie.ReleasedDate = releaseDate;
                 }
 
-                string genre = model.Movie.Genre.Trim();
-                if (genre.Length > 0)
+                // set genre with selected genres
+                foreach (string genre in model.SelectedGenres)
                 {
-                    newMovie.Genre = genre;
+                    newMovie.Genre += genre + Constants.COMMA;
                 }
+
+                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 1); // remove extra comma
 
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 
                 // save and set s3 vid, thumbnail 
                 IFormFile vidFile = model.Movie.Video;
-                string vidKey = movieId + Constants.PERIOD + vidFile.ContentType.Substring(vidFile.ContentType.IndexOf(Constants.FORWARD_SLASH)+1);
+                string vidKey = movieId + Constants.PERIOD + vidFile.ContentType.Substring(vidFile.ContentType.IndexOf(Constants.FORWARD_SLASH) + 1);
                 string vidUploadResult = await S3Service.UploadMovie(vidKey, vidFile);
 
                 if (vidUploadResult.Contains(Constants.ERROR))
@@ -138,7 +140,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     model.Message = movieUploadResult;
                     return View(model);
                 }
-                return RedirectToAction(nameof(Details), new { movieId });
+                return RedirectToAction(nameof(Details), new { movieId = movieId });
             }
             catch (Exception ex)
             {
