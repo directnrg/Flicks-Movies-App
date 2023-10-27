@@ -25,6 +25,7 @@
         Thriller,
         War,
         Western,
+        Suspense,
 
         // Some possible sub-genres
         Superhero, // could be seen as a subgenre of Action or Fantasy

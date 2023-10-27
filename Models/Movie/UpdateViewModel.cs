@@ -6,10 +6,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
     public class UpdateViewModel
     {
         public MovieModel Movie { get; set; } = new();
-
-        public List<MovieModel> Movies { get; set; } = new();  
-        public List<MovieGenre> MovieGenres { get; set; } = Enum.GetValues(typeof(MovieGenre)).Cast<MovieGenre>().ToList();
-
         public List<MovieGenre>? SelectedGenres { get; set; }
 
         public string ConvertSelectedGenresToString()

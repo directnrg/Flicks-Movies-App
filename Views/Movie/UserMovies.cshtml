@@ -7,6 +7,7 @@
         <tr>
             <th>Title</th>
             <th>Genre</th>
+            <th>Director(s)</th>
             <th>Released Date</th>
             <th></th> <!-- This will be for the Edit button -->
         </tr>
@@ -14,15 +15,25 @@
     <tbody>
         @foreach (var movie in Model.Movies)
         {
+            <form method="post" asp-controller="Movie" asp-action="UpdateGet">
             <tr>
                 <td>@movie.Title</td>
                 <td>@movie.Genre</td>
-                <td>@movie.Directors</td>
+                <td>@string.Join(", ", movie.Directors)</td>
                 <td>@movie.ReleasedDate</td>
                 <td>
-                    <a href="@Url.Action("Update", new { movieId = movie.MovieId })" class="btn btn-primary">Edit</a>
+                    <input type="hidden" asp-for="@movie.MovieId" name="Movie.MovieId" />
+                    <input type="hidden" asp-for="@movie.Title" name="Movie.Title" />
+                    <input type="hidden" asp-for="@movie.Genre" name="Movie.Genre" />
+                        @foreach (var director in movie.Directors)
+                        {
+                        <input type="hidden" name="Movie.Directors" value="@director" />
+                        }
+                    <input type="hidden" asp-for="@movie.ReleasedDate" name="Movie.ReleasedDate" />
+                    <button type="submit" class="btn btn-primary">Edit</button>
                 </td>
             </tr>
+            </form>
         }
     </tbody>
 </table>
