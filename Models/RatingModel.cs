@@ -11,15 +11,17 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         [DynamoDBRangeKey]
         public string UserId { get; set; }
         public double Rating { get; set; }
-        public string RatingTimestamp { get; set; }
+        public string Timestamp { get; set; }
+        public string Type { get; set; }
 
         // rating
         public RatingModel(string movieIdwithNoPrefix, string userId, double rating)
         {
+            Type = Constants.CAP_RATING;
             MovieId = Constants.CAP_RATING + movieIdwithNoPrefix;
             UserId = userId;
             Rating = rating;
-            RatingTimestamp = DateTime.UtcNow.ToString();
+            Timestamp = DateTime.UtcNow.ToString("s");
         }
     }
 }
