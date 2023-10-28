@@ -21,9 +21,9 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
          */
         internal static async Task<List<MovieModel>> GetAllMovies()
         {
-            ScanFilter scanFilter = new();
-            scanFilter.AddCondition(Constants.MOVIE_ID, ScanOperator.Contains, Constants.CAP_MOVIE);
-            var query = context.FromScanAsync<MovieModel>(new ScanOperationConfig{ Filter= scanFilter});
+            QueryFilter filter = new();
+            filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.CAP_MOVIE);
+            var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig{IndexName=Constants.GSI_TYPE_TIMESTAMP, BackwardSearch=true, Filter= filter});
             List<MovieModel> movies = await query.GetRemainingAsync();
             return movies;
         }
@@ -161,7 +161,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             var scanConditions = new List<ScanCondition>
             {
                 new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_COMMENT}{movieId}"),
-                new ScanCondition(Constants.COMMENT_TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("o"))
+                new ScanCondition(Constants.TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("o"))
             };
             // should specify the gsi used
             return await context.ScanAsync<CommentModel>(scanConditions).GetRemainingAsync();

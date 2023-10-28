@@ -7,7 +7,8 @@
         public static string CAP_RATING = "RATING#";
         public static string MOVIE_ID = "MovieId";
         public static string USER_ID = "UserId";
-        public static string COMMENT_TIMESTAMP = "CommentTimestamp";
+        public static string TIMESTAMP = "Timestamp";
+        public static string TYPE = "Type";
         public static string GENRE = "Genre";
         public static string AVG_RATING = "AvgRating";
         public static string TITLE = "Title";
@@ -31,8 +32,7 @@
         // GSI
         public static string GSI_GENRE = "Genre-index";
         public static string GSI_AVG_RATING = "AvgRating-index";
-        public static string GSI_COMMENT_TIMESTAMP = "MovieId-CommentTimestamp-index";
-        public static string GSI_MOVIE_UPLOAD_TIMESTAMP = "MovieId-MovieUploadTimestamp-index";
+        public static string GSI_TYPE_TIMESTAMP = "Type-Timestamp-index";
         public static string GSI_USER_MOVIE = "UserId-MovieId-index";
 
         // action
