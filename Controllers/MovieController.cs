@@ -161,8 +161,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
                 model.ReviewViewModel = new()
                 {
-                    Comments = await DynamoDBService.GetCommentsInLast24h(movieId),
-                    Ratings = await DynamoDBService.GetRatingsInLast24h(movieId)
+                    Comments = await DynamoDBService.GetAllCommentsAsync(movieId),
+                    Ratings = await DynamoDBService.GetAllRatingsAsync(movieId)
                 };
 
                 return View(model);
