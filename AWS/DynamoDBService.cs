@@ -257,10 +257,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         {
             try
             {
-                var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("s");
-
                 QueryFilter filter = new();
-                //filter.AddCondition(Constants.TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("s"));
                 filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.PREFIX_COMMENT);
                 filter.AddCondition(Constants.MOVIE_ID, ScanOperator.Equal, Constants.PREFIX_COMMENT + movieId);
 
@@ -281,14 +278,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        public static async Task<List<RatingModel>> GetRatingsInLast24h(string movieId)
+        public static async Task<List<RatingModel>> GetAllRatingsAsync(string movieId)
         {
             try
             {
-                var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("s");
-
                 QueryFilter filter = new();
-                filter.AddCondition(Constants.TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("s"));
                 filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.PREFIX_RATING);
                 filter.AddCondition(Constants.MOVIE_ID, ScanOperator.Equal, Constants.PREFIX_RATING + movieId);
 
