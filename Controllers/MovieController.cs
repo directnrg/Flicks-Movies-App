@@ -18,6 +18,14 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             _userManager = userManager;
         }
 
+        /* convert images in memory form to base64 string to display */
+        public string ConvertToBase64(MemoryStream memoryStream)
+        {
+            byte[] bytes = memoryStream.ToArray();
+            string base64String = Convert.ToBase64String(bytes);
+            return base64String;
+        }
+        
         // GET: Movie
         public async Task<ActionResult> Index(string? genre, double? minRate, double? maxRate)
         {
@@ -44,7 +52,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // set min, max default if not given
                         minRate = (minRate == null) ? 0 : minRate;
-                        maxRate = (maxRate == null) ? 10 : maxRate;
+                        maxRate = (maxRate == null) ? 5 : maxRate;
                         moviesByRating = await DynamoDBService.GetMoviesByAvgRating((double)minRate, (double)maxRate);
 
                         // search with ratings only
@@ -64,9 +72,18 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // search with genres only
                         model.Movies = moviesByGenre;
-                    }
+                    }                                    
+                }
 
-                    
+                foreach(MovieModel movie in model.Movies)
+                {
+                    // get thumbnails
+                    MemoryStream thumbnailMemory = await S3Service.GetThumbnail(movie.ThumbnailS3Key);
+
+                    string base64Image = ConvertToBase64(thumbnailMemory);
+
+                    // Pass the base64 image to the CSHTML view
+                    movie.ThumbnailBase64 = base64Image;
                 }
             }
             catch (Exception ex)
@@ -130,6 +147,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     return RedirectToAction("Error", new { errorMessage = thumbnailUploadResult });
                 }
                 newMovie.ThumbnailS3Key = thumbnailKey;
+                newMovie.ThumbnailContentType = thumbnailFile.ContentType;
 
                 // add updatedMovie data item
                 string movieUploadResult = await DynamoDBService.AddMovieItem(newMovie);

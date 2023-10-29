@@ -45,3 +45,36 @@ body {
     color: white; 
     cursor: pointer; 
 }
+
+/* index (search) page table style */
+.movie-list-table {
+    width: 100%,
+}
+
+/* thumbnail */
+.movie-list-table th:nth-child(1),
+.movie-list-table td:nth-child(1) {
+    width: 15%;
+}
+
+/* title */
+.movie-list-table th:nth-child(2),
+.movie-list-table td:nth-child(2) {
+    width: 35%;
+}
+
+/* genre */
+.movie-list-table th:nth-child(3),
+.movie-list-table td:nth-child(3) {
+    width: 35%;
+}
+
+/* avg rating */
+.movie-list-table th:nth-child(4),
+.movie-list-table td:nth-child(4) {
+    width: 5%;
+}
+
+.movie-list-table .thumbnail-img {
+    max-width: 100%;
+}
