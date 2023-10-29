@@ -86,6 +86,23 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             return movieStream;
         }
 
+        internal static async Task<MemoryStream> GetThumbnail(string key)
+        {
+            MemoryStream thumbnailStream = new();
+            try
+            {
+                GetObjectResponse res = await AWSClients.s3Client.GetObjectAsync(Constants.MOVIE_BUCKET_NAME, Constants.THUMBNAIL_FOLDER + key);
+
+                res.ResponseStream.CopyTo(thumbnailStream);
+            }
+            catch (Exception e)
+            {
+                // only logging on the console, not to users
+                Console.WriteLine($"{Constants.ERROR} while getting thumbnail from S3: {e.Message}");
+            }
+            return thumbnailStream;
+        }
+
         internal static async Task<string> DeleteMovie(string key)
         {
             try

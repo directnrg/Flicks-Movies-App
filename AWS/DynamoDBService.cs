@@ -22,7 +22,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         internal static async Task<List<MovieModel>> GetAllMovies()
         {
             QueryFilter filter = new();
-            filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.CAP_MOVIE);
+            filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.CAP_MOVIE);
             var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig{IndexName=Constants.GSI_TYPE_TIMESTAMP, BackwardSearch=true, Filter= filter});
             List<MovieModel> movies = await query.GetRemainingAsync();
             return movies;
@@ -36,7 +36,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             {
                 var config = new DynamoDBOperationConfig
                 {
-                    IndexName = Constants.GSI_USER_MOVIE
+                    IndexName = Constants.GSI_USER_MOVIE,
+                    QueryFilter = new List<ScanCondition>
+                    {
+                        new ScanCondition(Constants.TYPE, ScanOperator.Equal, Constants.CAP_MOVIE)
+                    }
                 };
 
                 // Use the userId as the hash key value for the GSI and pass the config for querying
