@@ -2,9 +2,9 @@
 {
     public static class Constants
     {
-        public static string CAP_MOVIE = "MOVIE#";
-        public static string CAP_COMMENT = "COMMENT#";
-        public static string CAP_RATING = "RATING#";
+        public static string PREFIX_MOVIE = "MOVIE#";
+        public static string PREFIX_COMMENT = "COMMENT#";
+        public static string PREFIX_RATING = "RATING#";
         public static string MOVIE_ID = "MovieId";
         public static string USER_ID = "UserId";
         public static string TIMESTAMP = "Timestamp";
@@ -18,6 +18,7 @@
         public static char FORWARD_SLASH = '/';
         public static char COMMA = ',';
         public static string PERIOD = ".";
+        public static string HASHTAG = "#";
 
         // msg related
         public static string SUCCESS = "SUCCESS";
@@ -33,5 +34,16 @@
         public static string GSI_AVG_RATING = "AvgRating-index";
         public static string GSI_TYPE_TIMESTAMP = "Type-Timestamp-index";
         public static string GSI_USER_MOVIE = "UserId-MovieId-index";
+
+        //VIEWS 
+        public static string VIEW_DETAILS = "Details";
+        public static string VIEW_ERROR = "Error";
+        public static string VIEW_UPDATE = "Update";
+
+        //TempData
+        public static string TEMP_MOVIE = "Movie";
+        public static string TEMP_COMMENTS = "Comments";
+        public static string TEMP_RATINGS = "Ratings";
+
     }
 }
