@@ -24,6 +24,7 @@
         // msg related
         public static string SUCCESS = "SUCCESS";
         public static string ERROR = "ERROR";
+        public static string NOT_AUTHORIZED_MSG = "This action is not authorized for this user.";
 
         // bucket name
         public static string MOVIE_BUCKET_NAME = "comp306-lab3-movies-sk";
@@ -45,7 +46,6 @@
         public static string TEMP_MOVIE = "Movie";
         public static string TEMP_COMMENTS = "Comments";
         public static string TEMP_RATINGS = "Ratings";
-
 
         // action
         public static string UPDATE = "update";
