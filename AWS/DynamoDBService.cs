@@ -150,11 +150,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         {
             try
             {
-                bool userhaveCommented = await UserHaveCommented(comment.MovieId, comment.UserId);
-                if (!userhaveCommented)
-                {
+                //bool userCommentIn24h = await UserHaveCommentedInLast24h(comment.MovieId, comment.UserId);
+                //if (!userCommentIn24h)
+                //{
                     await context.SaveAsync(comment);
-                }
+                //}
                 return Constants.SUCCESS;
             }
             catch (Exception ex)
@@ -163,85 +163,45 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        /// <summary>
-        /// This method assumes that the parameter for "movieId" recieves prefix + movieId
-        /// </summary>
-        /// <param name="commentMovieId"></param>
-        /// <param name="userId"></param>
-        /// <returns>true if the user have commented the specified movie, or false otherwise.</returns>
-        internal static async Task<bool> UserHaveCommented(string commentMovieId, string userId)
-        {
-            QueryFilter filter = new();
-            filter.AddCondition(Constants.MOVIE_ID, QueryOperator.Equal, commentMovieId);
-            filter.AddCondition(Constants.USER_ID, QueryOperator.Equal, userId);
-
-            var queryConfig = new QueryOperationConfig
-            {
-                Filter = filter
-            };
-
-            var query = context.FromQueryAsync<CommentModel>(queryConfig);
-            var comment = await query.GetRemainingAsync();
-            return comment.Any();
-        }
-
         internal static async Task<string> AddRatingItem(RatingModel rating)
         {
             try
             {
-                bool userHasRated = await UserHasRated(rating.MovieId, rating.UserId);
-                if (!userHasRated)
+                // Check if the user has already rated the movie
+                var existingRating = await context.LoadAsync<RatingModel>(rating.MovieId, rating.UserId);
+
+                // Update movie's rating properties
+                var movie = await GetMovieById(rating.MovieId[(rating.MovieId.IndexOf(Constants.HASHTAG) + 1)..]);
+
+                if (movie != null)
                 {
-                    MovieModel movie = await UpdateMovieRatingProperties(rating.MovieId, rating.Rating);
+                    // Calculate the updated average rating for the movie
+                    double previousRatingValue = existingRating == null ? 0 : existingRating.Rating;
+                    double newRatingValue = rating.Rating;
+
+                    movie.AvgRating = ((movie.AvgRating * movie.NumOfRatings) - previousRatingValue + newRatingValue) / (movie.NumOfRatings);
+
+                    if (existingRating == null)
+                    {
+                        movie.NumOfRatings++;
+                    }
+                    
+                    //Update the movie
                     await context.SaveAsync(movie);
+
+                    // Save the new user rating
+                    await context.SaveAsync(rating);
+
+                    return Constants.SUCCESS;
                 }
-                await context.SaveAsync(rating);
-                return Constants.SUCCESS;
+                else
+                {
+                    return $"{Constants.ERROR} Not possible to update Movie Records. Movie not found.";
+                }
             }
             catch (Exception ex)
             {
                 return $"{Constants.ERROR} while adding rating data: {ex.Message}";
-            }
-        }
-
-        /// <summary>
-        /// This method assumes that the parameter for "movieId" recieves prefix + movieId
-        /// </summary>
-        /// <param name="ratingMovieId"></param>
-        /// <param name="userId"></param>
-        /// <returns>true if the user has rated the specified movie, or false otherwise.</returns>
-        internal static async Task<bool> UserHasRated(string ratingMovieId, string userId)
-        {
-            QueryFilter filter = new();
-            filter.AddCondition(Constants.MOVIE_ID, QueryOperator.Equal, ratingMovieId);
-            filter.AddCondition(Constants.USER_ID, QueryOperator.Equal, userId);
-
-            var queryConfig = new QueryOperationConfig
-            {
-                Filter = filter
-            };
-
-            var query = context.FromQueryAsync<RatingModel>(queryConfig);
-            var rating = await query.GetRemainingAsync();
-            return rating.Any();
-        }
-
-
-        internal static async Task<MovieModel> UpdateMovieRatingProperties(string movieId, double rating)
-        {
-            movieId = movieId[(movieId.IndexOf(Constants.HASHTAG) + 1)..];
-
-            try
-            {
-                var dbMovie = await GetMovieById(movieId);
-
-                dbMovie.NumOfRatings++;
-                dbMovie.AvgRating = ((dbMovie.AvgRating * (dbMovie.NumOfRatings - 1)) + rating) / dbMovie.NumOfRatings;
-                return dbMovie;
-            } catch (Exception ex)
-            {
-                Debug.WriteLine($"{Constants.ERROR} while updating movie rating properties. {ex.Message}");
-                throw;
             }
         }
 
@@ -258,13 +218,14 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             try
             {
                 QueryFilter filter = new();
-                filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.PREFIX_COMMENT);
                 filter.AddCondition(Constants.MOVIE_ID, ScanOperator.Equal, Constants.PREFIX_COMMENT + movieId);
+                filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.PREFIX_COMMENT);
+
 
                 QueryOperationConfig config = new()
                 {
                     Filter = filter,
-                    IndexName = Constants.GSI_TYPE_TIMESTAMP       
+                    IndexName = Constants.GSI_TYPE_TIMESTAMP,
                 };
 
                 var query = context.FromQueryAsync<CommentModel>(config);
@@ -273,7 +234,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
             catch (AmazonDynamoDBException ex) 
             {
-                Debug.WriteLine($"Error getting comments in the last 24 hours: {ex.Message}");
+                Debug.WriteLine($"Error getting all comments: {ex.Message}");
                 throw;
             }
         }
@@ -283,8 +244,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             try
             {
                 QueryFilter filter = new();
-                filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.PREFIX_RATING);
                 filter.AddCondition(Constants.MOVIE_ID, ScanOperator.Equal, Constants.PREFIX_RATING + movieId);
+                filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.PREFIX_RATING);
 
                 QueryOperationConfig config = new()
                 {
@@ -298,7 +259,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
             } catch (AmazonDynamoDBException ex)
             {
-                Debug.WriteLine($"Error getting Ratings in the last 24 hours: {ex.Message}");
+                Debug.WriteLine($"Error getting all Ratings: {ex.Message}");
                 throw;
             }
         }

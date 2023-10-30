@@ -17,10 +17,10 @@ function closeBanner() {
 }
 
 
-var dialog = document.getElementById('ReviewModal');
-document.getElementById('show').onclick = function () {
-    dialog.show();
-};
-document.getElementById('hide').onclick = function () {
-    dialog.close();
-};    
+//var dialog = document.getElementById('ReviewModal');
+//document.getElementById('show').onclick = function () {
+//    dialog.show();
+//};
+//document.getElementById('hide').onclick = function () {
+//    dialog.close();
+//};    

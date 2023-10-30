@@ -112,30 +112,6 @@
                             
                         </div>
 
-
-
-                        @* <input asp-for="MovieIdNoPrefix" type="hidden" value="@(Model.Movie.MovieId.Substring(6))">
-                        <input asp-for="UserId" type="hidden" value="@(Model.Movie.UserId)"> *@
-
-                        @*To return the movie object properties that are being used to the details view after saving the review*@
-                        @* <input asp-for="Movie.MovieId" type="hidden" value="@(Model.Movie.MovieId)">
-                        <input asp-for="Movie.UserId" type="hidden" value="@(Model.Movie.UserId)">
-                        <input asp-for="Movie.Title" type="hidden" value="@(Model.Movie.Title)">
-                        <input asp-for="Movie.Genre" type="hidden" value="@(Model.Movie.Genre)">
-                        <input asp-for="Movie.AvgRating" type="hidden" value="@(Model.Movie.AvgRating)">
-                        <input asp-for="Movie.NumOfRatings" type="hidden" value="@(Model.Movie.NumOfRatings)">
-                        <input asp-for="Movie.ReleasedDate" type="hidden" value="@(Model.Movie.ReleasedDate)"> *@
-
-                        @*To return the list of comments and ratings that are being displayed after saving a review*@
-                        @* @foreach (var comment in Model.ReviewViewModel.Comments)
-                        {
-                            <input asp-for="ReviewViewModel.Comments" type="hidden" value="@comment">
-                        }
-                        @foreach (var rating in Model.ReviewViewModel.Ratings)
-                        {
-                            <input asp-for="ReviewViewModel.Comments" type="hidden" value="@rating">
-                        } *@
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save Review</button>

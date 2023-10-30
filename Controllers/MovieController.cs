@@ -162,8 +162,32 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 model.ReviewViewModel = new()
                 {
                     Comments = await DynamoDBService.GetAllCommentsAsync(movieId),
-                    Ratings = await DynamoDBService.GetAllRatingsAsync(movieId)
+                    Ratings = await DynamoDBService.GetAllRatingsAsync(movieId),
                 };
+
+                //verify if user has commented in last 24 hours
+                var oneDayAgo = DateTime.UtcNow.AddHours(-24);
+
+                foreach (var comment in model.ReviewViewModel.Comments)
+                {
+                    DateTime commentTime = DateTime.Parse(comment.Timestamp);
+                    if (commentTime <= oneDayAgo && comment.UserId == _userManager.GetUserId(User))
+                    {
+                        model.ReviewViewModel.IsEditBtnHidden?.Add(false);
+                    } else
+                    {
+                        model.ReviewViewModel.IsEditBtnHidden?.Add(true);
+                    }
+                }
+
+                if (model.ReviewViewModel.IsEditBtnHidden != null)
+                {
+                    foreach (var item in model.ReviewViewModel.IsEditBtnHidden)
+                    {
+                        Debug.WriteLine($"btnHidden value: {item}");
+                    }
+                }
+        
 
                 return View(model);
             }
