@@ -1,4 +1,5 @@
 ﻿using _301153142_301137955_Soto_Ko_Lab3.Models;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -22,7 +23,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         internal static async Task<List<MovieModel>> GetAllMovies()
         {
             QueryFilter filter = new();
-            filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.CAP_MOVIE);
+            filter.AddCondition(Constants.TYPE, ScanOperator.Equal, Constants.PREFIX_MOVIE);
             var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig{IndexName=Constants.GSI_TYPE_TIMESTAMP, BackwardSearch=true, Filter= filter});
             List<MovieModel> movies = await query.GetRemainingAsync();
             return movies;
@@ -30,13 +31,17 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         internal static async Task<List<MovieModel>> GetMoviesByUserId(string userId)
         {
-            Debug.WriteLine($"user ID: {userId}");
+            Debug.WriteLine($"IDs at GetMoviesByUserId:\nuserId: {userId}");
 
             try
             {
                 var config = new DynamoDBOperationConfig
                 {
-                    IndexName = Constants.GSI_USER_MOVIE
+                    IndexName = Constants.GSI_USER_MOVIE,
+                    QueryFilter = new List<ScanCondition>
+                    {
+                        new ScanCondition(Constants.TYPE, ScanOperator.Equal, Constants.PREFIX_MOVIE)
+                    }
                 };
 
                 // Use the userId as the hash key value for the GSI and pass the config for querying
@@ -87,7 +92,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         {
             try
             {
-                QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.CAP_MOVIE + movieId);
+                QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.PREFIX_MOVIE + movieId);
                 var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig { Filter = filter });
                 List<MovieModel> movie = await query.GetRemainingAsync();
                 return movie.ElementAt(0);
@@ -140,18 +145,129 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         }
 
-        /* methods to be implemented */
-        public static async Task<List<CommentModel>> GetCommentsInLast24h(string movieId)
-        {
-            var oneDayAgo = DateTime.UtcNow.AddHours(-24).ToString("s");
 
-            var scanConditions = new List<ScanCondition>
+        internal static async Task<string> AddCommentItem(CommentModel comment)
+        {
+            try
             {
-                new ScanCondition(Constants.MOVIE_ID, ScanOperator.Equal, $"{Constants.CAP_COMMENT}{movieId}"),
-                new ScanCondition(Constants.TIMESTAMP, ScanOperator.Between, oneDayAgo, DateTime.UtcNow.ToString("o"))
-            };
-            // should specify the gsi used
-            return await context.ScanAsync<CommentModel>(scanConditions).GetRemainingAsync();
+                //bool userCommentIn24h = await UserHaveCommentedInLast24h(comment.MovieId, comment.UserId);
+                //if (!userCommentIn24h)
+                //{
+                    await context.SaveAsync(comment);
+                //}
+                return Constants.SUCCESS;
+            }
+            catch (Exception ex)
+            {
+                return $"{Constants.ERROR} while adding comment data: {ex.Message}";
+            }
         }
+
+        internal static async Task<string> AddRatingItem(RatingModel rating)
+        {
+            try
+            {
+                // Check if the user has already rated the movie
+                var existingRating = await context.LoadAsync<RatingModel>(rating.MovieId, rating.UserId);
+
+                // Update movie's rating properties
+                var movie = await GetMovieById(rating.MovieId[(rating.MovieId.IndexOf(Constants.HASHTAG) + 1)..]);
+
+                if (movie != null)
+                {
+                    // Calculate the updated average rating for the movie
+                    double previousRatingValue = existingRating == null ? 0 : existingRating.Rating;
+                    double newRatingValue = rating.Rating;
+
+                    // new rating
+                    if (existingRating == null)
+                    {
+                        movie.AvgRating = Math.Round(((movie.AvgRating * movie.NumOfRatings) + newRatingValue) / (movie.NumOfRatings + 1), 1);
+                        movie.NumOfRatings++;
+                    }
+                    // update existing rating
+                    else
+                    {
+                        movie.AvgRating = Math.Round(((movie.AvgRating * movie.NumOfRatings) - previousRatingValue + newRatingValue) / (movie.NumOfRatings), 1);
+                    }
+
+                    //Update the movie
+                    await context.SaveAsync(movie);
+
+                    // Save the new user rating
+                    await context.SaveAsync(rating);
+
+                    return Constants.SUCCESS;
+                }
+                else
+                {
+                    return $"{Constants.ERROR} Not possible to update Movie Records. Movie not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{Constants.ERROR} while adding rating data: {ex.Message}";
+            }
+        }
+
+        internal static async Task<List<RatingModel>> GetAllRatingsByMovieIdAsync(string movieId)
+        {
+            QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.PREFIX_RATING + movieId);
+            var query = context.FromQueryAsync<RatingModel>(new QueryOperationConfig { Filter = filter });
+            return await query.GetRemainingAsync();
+        }
+
+        /* methods to be implemented */
+        internal static async Task<List<CommentModel>> GetAllCommentsAsync(string movieId)
+        {
+            try
+            {
+                QueryFilter filter = new();
+                filter.AddCondition(Constants.MOVIE_ID, ScanOperator.Equal, Constants.PREFIX_COMMENT + movieId);
+                filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.PREFIX_COMMENT);
+
+
+                QueryOperationConfig config = new()
+                {
+                    Filter = filter,
+                    IndexName = Constants.GSI_TYPE_TIMESTAMP,
+                };
+
+                var query = context.FromQueryAsync<CommentModel>(config);
+                var comments = await query.GetRemainingAsync();
+                return comments;
+            }
+            catch (AmazonDynamoDBException ex) 
+            {
+                Debug.WriteLine($"Error getting all comments: {ex.Message}");
+                throw;
+            }
+        }
+
+        public static async Task<List<RatingModel>> GetAllRatingsAsync(string movieId)
+        {
+            try
+            {
+                QueryFilter filter = new();
+                filter.AddCondition(Constants.MOVIE_ID, ScanOperator.Equal, Constants.PREFIX_RATING + movieId);
+                filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.PREFIX_RATING);
+
+                QueryOperationConfig config = new()
+                {
+                    Filter = filter,
+                    IndexName = Constants.GSI_TYPE_TIMESTAMP
+                };
+
+                var query = context.FromQueryAsync<RatingModel>(config);
+                var ratings = await query.GetRemainingAsync();
+                return ratings;
+
+            } catch (AmazonDynamoDBException ex)
+            {
+                Debug.WriteLine($"Error getting all Ratings: {ex.Message}");
+                throw;
+            }
+        }
+
     }
 }
