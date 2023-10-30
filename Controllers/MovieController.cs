@@ -168,7 +168,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 //verify if user has commented in last 24 hours
                 var oneDayAgo = DateTime.UtcNow.AddHours(-24);
 
-                foreach (var comment in model.ReviewViewModel.Comments)
+                foreach (CommentModel comment in model.ReviewViewModel.Comments)
                 {
                     DateTime commentTime = DateTime.Parse(comment.Timestamp);
                     if (comment.UserId == _userManager.GetUserId(User))
@@ -177,7 +177,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                         if (commentTime >= oneDayAgo)
                         {
                             model.ReviewViewModel.IsEditBtnHidden?.Add(false);
-                            // add logic passing existing comment, rating
+                            // pass existing comment, rating
+                            model.Comment = comment.Comment;
+                            int idx = model.ReviewViewModel.Comments.IndexOf(comment);
+                            model.Rating = model.ReviewViewModel.Ratings.ElementAt(idx).Rating;  
                         }
                     } else
                     {

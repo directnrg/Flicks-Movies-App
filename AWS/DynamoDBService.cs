@@ -182,13 +182,13 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
                     // new rating
                     if (existingRating == null)
                     {
-                        movie.AvgRating = ((movie.AvgRating * movie.NumOfRatings) + newRatingValue) / (movie.NumOfRatings + 1);
+                        movie.AvgRating = Math.Round(((movie.AvgRating * movie.NumOfRatings) + newRatingValue) / (movie.NumOfRatings + 1), 1);
                         movie.NumOfRatings++;
                     }
                     // update existing rating
                     else
                     {
-                        movie.AvgRating = ((movie.AvgRating * movie.NumOfRatings) - previousRatingValue + newRatingValue) / (movie.NumOfRatings);
+                        movie.AvgRating = Math.Round(((movie.AvgRating * movie.NumOfRatings) - previousRatingValue + newRatingValue) / (movie.NumOfRatings), 1);
                     }
 
                     //Update the movie

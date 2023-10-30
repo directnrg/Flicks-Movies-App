@@ -66,40 +66,40 @@
                     <form asp-action="Review" method="post" asp-route-movieId="@Model.Movie.MovieId">
                         <div class="form-group">
                             <label for="comment">Comment:</label>
-                            <textarea class="form-control" id="Comment" asp-for="Comment" required></textarea>
+                            <textarea class="form-control" id="Comment" asp-for="Comment" value="@(Model.Comment)" required></textarea>
                         </div>
                         <div class="form-group">
                             <div class="star-container">
                                 <div class="container__items">
-                                    <input type="radio" name="Rating" id="st5" value="5">
+                                    <input type="radio" name="Rating" id="st5" value="5" @(Model.Rating==5.0 ? "checked": "")>
                                     <label for="st5">
                                         <div class="star-stroke">
                                             <div class="star-fill"></div>
                                         </div>
                                         <div class="label-description" data-content="Excellent"></div>
                                     </label>
-                                    <input type="radio" name="Rating" id="st4" value="4">
+                                    <input type="radio" name="Rating" id="st4" value="4" @(Model.Rating == 4.0 ? "checked" : "")>
                                     <label for="st4">
                                         <div class="star-stroke">
                                             <div class="star-fill"></div>
                                         </div>
                                         <div class="label-description" data-content="Good"></div>
                                     </label>
-                                    <input type="radio" name="Rating" id="st3" value="3">
+                                    <input type="radio" name="Rating" id="st3" value="3" @(Model.Rating == 3.0 ? "checked" : "")>
                                     <label for="st3">
                                         <div class="star-stroke">
                                             <div class="star-fill"></div>
                                         </div>
                                         <div class="label-description" data-content="OK"></div>
                                     </label>
-                                    <input type="radio" name="Rating" id="st2" value="2">
+                                    <input type="radio" name="Rating" id="st2" value="2" @(Model.Rating == 2.0 ? "checked" : "")>
                                     <label for="st2">
                                         <div class="star-stroke">
                                             <div class="star-fill"></div>
                                         </div>
                                         <div class="label-description" data-content="Bad"></div>
                                     </label>
-                                    <input type="radio" name="Rating" id="st1" value="1">
+                                    <input type="radio" name="Rating" id="st1" value="1" @(Model.Rating == 1.0 ? "checked" : "")>
                                     <label for="st1">
                                         <div class="star-stroke">
                                             <div class="star-fill"></div>
