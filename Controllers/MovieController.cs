@@ -392,9 +392,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     return deleteS3ThumbnailResult;
                 }
 
-                // Delete comments, ratings => RATING#movieId, COMMENT#movidId
-
-                // Delete meta data row => MOVIE#movieId 
+                // Delete comments, ratings items for the movie, and delete movie meta data item
                 string deleteMovieDataResult = await DynamoDBService.DeleteMovie(movie);
                 if (deleteMovieDataResult != Constants.SUCCESS)
                 {

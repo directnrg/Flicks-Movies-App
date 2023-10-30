@@ -127,7 +127,7 @@ body {
             transform: rotateY(180deg);
         }
 
-        /*To display the stars only based on user rating*/
+ /*To display the stars only based on user rating*/
 .star-container-display {
     position: relative;
     transform: rotateY(180deg);
@@ -183,11 +183,6 @@ body {
     }
 }
 
-.detail.thumbnail-img {
-    padding: 20px;
-    max-width: 80%;
-}
-
 /* index (search) page table style */
 .movie-list-table {
     width: 100%,
@@ -224,4 +219,9 @@ body {
 a {
     text-decoration: none;
     color: inherit;
+}
+
+.detail.thumbnail-img {
+    padding: 20px;
+    max-width: 50%;
 }

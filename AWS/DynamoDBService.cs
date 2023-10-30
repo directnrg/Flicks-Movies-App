@@ -23,7 +23,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
         internal static async Task<List<MovieModel>> GetAllMovies()
         {
             QueryFilter filter = new();
-            filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.CAP_MOVIE);
+            filter.AddCondition(Constants.TYPE, QueryOperator.Equal, Constants.PREFIX_MOVIE);
             var query = context.FromQueryAsync<MovieModel>(new QueryOperationConfig{IndexName=Constants.GSI_TYPE_TIMESTAMP, BackwardSearch=true, Filter= filter});
             List<MovieModel> movies = await query.GetRemainingAsync();
             return movies;
@@ -145,7 +145,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         }
 
-
         internal static async Task<string> AddCommentItem(CommentModel comment)
         {
             try
@@ -210,17 +209,29 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        internal static async Task<List<RatingModel>> GetAllRatingsByMovieIdAsync(string movieId)
-        {
-            QueryFilter filter = new(Constants.MOVIE_ID, QueryOperator.Equal, Constants.PREFIX_RATING + movieId);
-            var query = context.FromQueryAsync<RatingModel>(new QueryOperationConfig { Filter = filter });
-            return await query.GetRemainingAsync();
-        }
-
         internal static async Task<string> DeleteMovie(MovieModel movieToDelete)
         {
             try
             {
+                string movieId = movieToDelete.MovieId.Substring(Constants.PREFIX_MOVIE.Length);
+
+                // delete ratings
+                List<RatingModel> ratings = await GetAllRatingsAsync(movieId);
+
+                foreach (RatingModel rating in ratings)
+                {
+                    await context.DeleteAsync(rating);
+                }
+
+                // delete comments
+                List<CommentModel> comments = await GetAllCommentsAsync(movieId);
+
+                foreach (CommentModel comment in comments)
+                {
+                    await context.DeleteAsync(comment);
+                }
+
+                // delete movie meta data 
                 await context.DeleteAsync(movieToDelete);
                 return Constants.SUCCESS;
             }
@@ -230,7 +241,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             }
         }
 
-        /* methods to be implemented */
+        /* query review items with movieId */
         internal static async Task<List<CommentModel>> GetAllCommentsAsync(string movieId)
         {
             try
