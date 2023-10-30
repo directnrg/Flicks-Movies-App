@@ -79,10 +79,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 {
                     // get thumbnails
                     MemoryStream thumbnailMemory = await S3Service.GetThumbnail(movie.ThumbnailS3Key);
-
                     string base64Image = ConvertToBase64(thumbnailMemory);
-
-                    // Pass the base64 image to the CSHTML view
                     movie.ThumbnailBase64 = base64Image;
                 }
             }
@@ -172,6 +169,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             try
             {
                 MovieModel movie = await DynamoDBService.GetMovieById(movieId);
+
+                // get thumbnail
+                MemoryStream thumbnailMemory = await S3Service.GetThumbnail(movie.ThumbnailS3Key);
+                string base64Image = ConvertToBase64(thumbnailMemory);
+                movie.ThumbnailBase64 = base64Image;
+
                 model.Movie = movie;
             }
             catch (ArgumentOutOfRangeException)
@@ -228,6 +231,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
                 if (action == Constants.UPDATE)
                 {
+                    // get thumbnail
+                    MemoryStream thumbnailMemory = await S3Service.GetThumbnail(model.Movie.ThumbnailS3Key);
+                    string base64Image = ConvertToBase64(thumbnailMemory);
+                    model.Movie.ThumbnailBase64 = base64Image;
                     return View("Update", model);
                 }
                 else if (action == Constants.DELETE)

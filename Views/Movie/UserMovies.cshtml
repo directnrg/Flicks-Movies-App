@@ -51,6 +51,7 @@
                         <input type="hidden" name="Movie.Directors" value="@director" />
                         }
                     <input type="hidden" asp-for="@movie.ReleasedDate" name="Movie.ReleasedDate" />
+                    <button class="btn btn-primary"><a asp-action="Details" asp-route-movieId="@movie.MovieId.Substring(6)">Details</a></button>
                     <button type="submit" name="action" value=@Constants.UPDATE class="btn btn-primary">Update</button>
                     <button type="submit" name="action" value=@Constants.DELETE class="btn btn-primary">Delete</button>
                 </td>

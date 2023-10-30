@@ -25,20 +25,20 @@
     <table class="movie-list-table">
         <thead>
             <tr>
-                <th style="width: 20%;"></th>
-                <th style="width: 25%;">Title</th>
-                <th style="width: 35%;">Genre</th>
-                <th style="width: 10%;">Average Rating</th>
+                <th></th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Average Rating</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var movie in Model.Movies)
             {
                 <tr>
-                    <td style="width: 20%;"><img class="thumbnail-img" src="data:@movie.ThumbnailContentType;base64,@movie.ThumbnailBase64" alt="Image"></td>
-                    <td style="width: 25%;"><a asp-action="Details" asp-route-movieId="@movie.MovieId.Substring(6)">@movie.Title</a></td>
-                    <td style="width: 35%;">@movie.Genre</td>
-                    <td style="width: 10%;">@movie.AvgRating</td>
+                    <td><img class="thumbnail-img" src="data:@movie.ThumbnailContentType;base64,@movie.ThumbnailBase64" alt="Thumbnail"></td>
+                    <td><a asp-action="Details" asp-route-movieId="@movie.MovieId.Substring(6)">@movie.Title</a></td>
+                    <td>@movie.Genre</td>
+                    <td>@movie.AvgRating</td>
                 </tr>
             }
         </tbody>
