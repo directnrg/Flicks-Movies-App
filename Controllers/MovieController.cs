@@ -171,7 +171,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 foreach (var comment in model.ReviewViewModel.Comments)
                 {
                     DateTime commentTime = DateTime.Parse(comment.Timestamp);
-                    if (commentTime <= oneDayAgo && comment.UserId == _userManager.GetUserId(User))
+                    if (comment.UserId == _userManager.GetUserId(User) && commentTime >= oneDayAgo)
                     {
                         model.ReviewViewModel.IsEditBtnHidden?.Add(false);
                     } else
