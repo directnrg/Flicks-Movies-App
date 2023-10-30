@@ -46,6 +46,11 @@ body {
     cursor: pointer; 
 }
 
+.detail.thumbnail-img {
+    padding: 20px;
+    max-width: 80%;
+}
+
 /* index (search) page table style */
 .movie-list-table {
     width: 100%,
@@ -77,4 +82,9 @@ body {
 
 .movie-list-table .thumbnail-img {
     max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
 }
