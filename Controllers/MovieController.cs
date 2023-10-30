@@ -150,7 +150,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 newMovie.ThumbnailS3Key = thumbnailKey;
                 newMovie.ThumbnailContentType = thumbnailFile.ContentType;
 
-                // add updatedMovie data item
+                // add movie data item
                 string movieUploadResult = await DynamoDBService.AddMovieItem(newMovie);
                 if (movieUploadResult.Contains(Constants.ERROR))
                 {
@@ -301,9 +301,14 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         {
             try
             {
-                if (model == null)
+                if (model == null || model.Movie == null)
                 {
                     return NotFound($"Movie Object not Found.");
+                }
+
+                if (model.Movie.UserId != _userManager.GetUserId(HttpContext.User))
+                {
+                    throw new Exception(message: Constants.NOT_AUTHORIZED_MSG);
                 }
 
                 if (action == Constants.UPDATE)
@@ -336,7 +341,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while getting the movie update: {ex.Message}" });
+                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while getting the movie {action}: {ex.Message}" });
             }
             return View(Constants.VIEW_UPDATE, model);
         }
@@ -348,6 +353,16 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         {
             try
             {
+                if (model == null || model.Movie == null)
+                {
+                    return BadRequest("Movie Object is required");
+                }
+
+                if(model.Movie.UserId != _userManager.GetUserId(HttpContext.User))
+                {
+                    throw new Exception(message:Constants.NOT_AUTHORIZED_MSG);
+                }
+
                 // set genre with selected genres
                 model.Movie.Genre = model.ConvertSelectedGenresToString();
                 //converting directors to array
@@ -355,11 +370,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 //adding the user ID value before processing the update
                 var userId = _userManager.GetUserId(User);
                 model.Movie.UserId = userId;
-
-                if (model == null)
-                {
-                    return BadRequest("Movie Object is required");
-                }
              
                 await DynamoDBService.UpdateMovie(model.Movie);
 
@@ -379,6 +389,16 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         {
             try
             {
+                if (movie == null)
+                {
+                    return $"Movie Object not Found.";
+                }
+
+                if (movie.UserId != _userManager.GetUserId(HttpContext.User))
+                {
+                    throw new Exception(message: Constants.NOT_AUTHORIZED_MSG);
+                }
+
                 // Delete s3 bucket obj(vid, thumbnail) 
                 string deleteS3MovieResult = await S3Service.DeleteMovie(movie.VideoS3Key);
                 if (deleteS3MovieResult != Constants.SUCCESS)
