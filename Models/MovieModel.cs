@@ -29,8 +29,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public MovieModel() {}
         public MovieModel(string movieIdwithNoPrefix, string userId, string title)
         {
-            Type = Constants.CAP_MOVIE;
-            MovieId = Constants.CAP_MOVIE + movieIdwithNoPrefix;
+            Type = Constants.PREFIX_MOVIE;
+            MovieId = Constants.PREFIX_MOVIE + movieIdwithNoPrefix;
             Title = title;
             UserId = userId;
             NumOfRatings = 0;
