@@ -42,8 +42,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3
                 options.User.RequireUniqueEmail = true;
             });
 
-
-
             builder.Services.ConfigureApplicationCookie(options =>
 
             {
@@ -62,6 +60,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
+                //for more info when an error happens.
+                app.UseDeveloperExceptionPage();
             }
             else
             {

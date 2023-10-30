@@ -17,11 +17,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         // rating
         public RatingModel(string movieIdwithNoPrefix, string userId, double rating)
         {
-            Type = Constants.CAP_RATING;
-            MovieId = Constants.CAP_RATING + movieIdwithNoPrefix;
+            Type = Constants.PREFIX_RATING;
+            MovieId = Constants.PREFIX_RATING + movieIdwithNoPrefix;
             UserId = userId;
             Rating = rating;
             Timestamp = DateTime.UtcNow.ToString("s");
         }
+        public RatingModel() { }
     }
 }
