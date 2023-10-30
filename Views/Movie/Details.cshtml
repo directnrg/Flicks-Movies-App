@@ -1,4 +1,4 @@
-﻿@model _301153142_301137955_Soto_Ko_Lab3.Models.Movie.DetailsViewModel
+﻿@model DetailsViewModel
 
 @if (Model.Movie.MovieId != null)
 {
@@ -42,4 +42,85 @@
             </dd>
         </dl>
     </div>
+   
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ReviewModal" @(Model.IsAddBtnHidden == true ? "hidden" : "")>
+        Add Review
+    </button>
+    <div>
+        <!--Review Section (Comments and Ratings)-->
+        <partial name="_ReviewsPartial" model="Model.ReviewViewModel">
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="ReviewModal" tabindex="-1" aria-labelledby="ReviewModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Share to the world your review for <strong>@(Model.Movie.Title)</strong></h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @*Review recieves a ReviewViewModel as parameter*@
+                    <form asp-action="Review" method="post" asp-route-movieId="@Model.Movie.MovieId">
+                        <div class="form-group">
+                            <label for="comment">Comment:</label>
+                            <textarea class="form-control" id="Comment" asp-for="Comment" value="@(Model.Comment)" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <div class="star-container">
+                                <div class="container__items">
+                                    <input type="radio" name="Rating" id="st5" value="5" @(Model.Rating==5.0 ? "checked": "")>
+                                    <label for="st5">
+                                        <div class="star-stroke">
+                                            <div class="star-fill"></div>
+                                        </div>
+                                        <div class="label-description" data-content="Excellent"></div>
+                                    </label>
+                                    <input type="radio" name="Rating" id="st4" value="4" @(Model.Rating == 4.0 ? "checked" : "")>
+                                    <label for="st4">
+                                        <div class="star-stroke">
+                                            <div class="star-fill"></div>
+                                        </div>
+                                        <div class="label-description" data-content="Good"></div>
+                                    </label>
+                                    <input type="radio" name="Rating" id="st3" value="3" @(Model.Rating == 3.0 ? "checked" : "")>
+                                    <label for="st3">
+                                        <div class="star-stroke">
+                                            <div class="star-fill"></div>
+                                        </div>
+                                        <div class="label-description" data-content="OK"></div>
+                                    </label>
+                                    <input type="radio" name="Rating" id="st2" value="2" @(Model.Rating == 2.0 ? "checked" : "")>
+                                    <label for="st2">
+                                        <div class="star-stroke">
+                                            <div class="star-fill"></div>
+                                        </div>
+                                        <div class="label-description" data-content="Bad"></div>
+                                    </label>
+                                    <input type="radio" name="Rating" id="st1" value="1" @(Model.Rating == 1.0 ? "checked" : "")>
+                                    <label for="st1">
+                                        <div class="star-stroke">
+                                            <div class="star-fill"></div>
+                                        </div>
+
+                                        <div class="label-description" data-content="Terrible"></div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 }
+

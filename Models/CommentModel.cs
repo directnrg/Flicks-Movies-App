@@ -2,6 +2,7 @@
 
 namespace _301153142_301137955_Soto_Ko_Lab3.Models
 {
+    [DynamoDBTable("Movie")]
     public class CommentModel
     {
         [DynamoDBHashKey]
@@ -13,14 +14,17 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string Timestamp { get; set; }
         public string Type { get; set; }
 
+
         // comment
         public CommentModel(string movieIdwithNoPrefix, string userId, string comment)
         {
-            Type = Constants.CAP_COMMENT;
-            MovieId = Constants.CAP_COMMENT + movieIdwithNoPrefix;
+            Type = Constants.PREFIX_COMMENT;
+            MovieId = Constants.PREFIX_COMMENT + movieIdwithNoPrefix;
             UserId = userId;
             Comment = comment;
             Timestamp = DateTime.UtcNow.ToString("s");
         }
+        public CommentModel() { }
+
     }
 }
