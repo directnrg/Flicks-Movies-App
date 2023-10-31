@@ -34,9 +34,25 @@
                     <td><img class="thumbnail-img" src="data:@movie.ThumbnailContentType;base64,@movie.ThumbnailBase64" alt="Thumbnail"></td>
                     <td><a asp-action="Details" asp-route-movieId="@movie.MovieId.Substring(6)">@movie.Title</a></td>
                     <td>@movie.Genre</td>
-                    <td>@movie.AvgRating</td>
+                    <td>
+                        <!-- Display Stars -->
+                        <div class="star-container-display-index">
+                            <div class="container__items">
+                                @for (int j = 5; j >= 1; j--)
+                                {
+                                    <input type="radio" name="Rating_@(movie.MovieId)" id="st@(j)_@(movie.MovieId)" @(j == (int)Math.Floor(movie.AvgRating) ? "checked" : "")>
+                                    <div class="star-stroke">
+                                        <div class="star-fill"></div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <p>@movie.AvgRating</p>
+                    </td>
                 </tr>
             }
+            
         </tbody>
     </table>
 </div>

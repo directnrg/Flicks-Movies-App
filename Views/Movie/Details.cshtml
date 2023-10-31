@@ -57,7 +57,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Share to the world your review for <strong>@(Model.Movie.Title)</strong></h5>
+                    <h5 class="modal-title text-black">Share to the world your review for <strong>@(Model.Movie.Title)</strong></h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">x</span>
                     </button>
@@ -66,8 +66,8 @@
                     @*Review recieves a ReviewViewModel as parameter*@
                     <form asp-action="Review" method="post" asp-route-movieId="@Model.Movie.MovieId">
                         <div class="form-group">
-                            <label for="comment">Comment:</label>
-                            <textarea class="form-control" id="Comment" asp-for="Comment" value="@(Model.Comment)" required></textarea>
+                            <label for="comment" class="text-black">Comment:</label>
+                            <textarea class="form-control text-black" id="Comment" asp-for="Comment" value="@(Model.Comment)" required></textarea>
                         </div>
                         <div class="form-group">
                             <div class="star-container">

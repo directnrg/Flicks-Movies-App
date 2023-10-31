@@ -21,21 +21,21 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Genre</th>
-            <th>Director(s)</th>
-            <th>Released Date</th>
-            <th></th>
+            <th class="text-light">Title</th>
+            <th class="text-light">Genre</th>
+            <th class="text-light">Director(s)</th>
+            <th class="text-light">Released Date</th>
+            <th class="text-light"></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var movie in Model.Movies)
         {
             <tr>
-                <td>@movie.Title</td>
-                <td>@movie.Genre</td>
-                <td>@string.Join(", ", movie.Directors)</td>
-                <td>@movie.ReleasedDate</td>
+                <td class="text-light">@movie.Title</td>
+                <td class="text-light">@movie.Genre</td>
+                <td class="text-light">@string.Join(", ", movie.Directors)</td>
+                <td class="text-light">@movie.ReleasedDate</td>
                 <td>
                     <a href="@Url.Action("Details", "Movie", new { movieId = movie.MovieId.Substring(6) })" class="btn btn-primary">Details</a>
 
