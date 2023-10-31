@@ -372,34 +372,65 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             return View(Constants.VIEW_UPDATE, model);
         }
 
+        // POST: Movie/DeleteMovie
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteMovie(string movieId)
         {
-            if (string.IsNullOrWhiteSpace(movieId))
+            try
             {
-                return NotFound($"Movie Object not Found.");
-            }
+                if (string.IsNullOrWhiteSpace(movieId))
+                {
+                    return NotFound($"Movie Object not Found.");
+                }
 
-            var userId = _userManager.GetUserId(HttpContext.User);
-            var movie = await DynamoDBService.GetMovieById(movieId);
+                var userId = _userManager.GetUserId(HttpContext.User);
+                var movie = await DynamoDBService.GetMovieById(movieId);
 
-            if (movie.UserId != userId)
-            {
-                return Unauthorized(Constants.NOT_AUTHORIZED_MSG);
-            }
+                if (movie.UserId != userId)
+                {
+                    return Unauthorized(Constants.NOT_AUTHORIZED_MSG);
+                }
 
-            // Handle movie deletion
-            var deleteResult = await Delete(movie);
-            if (deleteResult.Contains(Constants.ERROR))
-            {
-                TempData["ErrorMessage"] = deleteResult;
-            }
-            else
-            {
-                TempData["SuccessMessage"] = "Movie deleted successfully!";
-            }
+                // Handle movie deletion
+                string deleteResult = "";
 
-            return RedirectToAction(nameof(UserMovies));
+                // Delete s3 bucket obj(vid, thumbnail) 
+                string deleteS3MovieResult = await S3Service.DeleteMovie(movie.VideoS3Key);
+                if (deleteS3MovieResult != Constants.SUCCESS)
+                {
+                    deleteResult = deleteS3MovieResult;
+                }
+
+                string deleteS3ThumbnailResult = await S3Service.DeleteThumbnail(movie.ThumbnailS3Key);
+                if (deleteS3ThumbnailResult != Constants.SUCCESS)
+                {
+                    deleteResult = deleteS3ThumbnailResult;
+                }
+
+                // Delete comments, ratings items for the movie, and delete movie meta data item
+                string deleteMovieDataResult = await DynamoDBService.DeleteMovie(movie);
+                if (deleteMovieDataResult != Constants.SUCCESS)
+                {
+                    deleteResult = deleteMovieDataResult;
+                }
+
+
+                if (deleteResult.Contains(Constants.ERROR))
+                {
+                    TempData["ErrorMessage"] = deleteResult;
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Movie deleted successfully!";
+                }
+
+                return RedirectToAction(nameof(UserMovies));
+            } catch (Exception ex) {
+
+                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while deleting movie: {ex.Message}" });
+
+            }
         }
 
         private async Task<string> GetThumbnailBase64(string s3Key)
@@ -456,50 +487,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
         }
 
-        // POST: Movie/Delete
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<string> Delete(MovieModel movie)
-        {
-            try
-            {
-                if (movie == null)
-                {
-                    return $"Movie Object not Found.";
-                }
-
-                if (movie.UserId != _userManager.GetUserId(HttpContext.User))
-                {
-                    throw new Exception(message: Constants.NOT_AUTHORIZED_MSG);
-                }
-
-                // Delete s3 bucket obj(vid, thumbnail) 
-                string deleteS3MovieResult = await S3Service.DeleteMovie(movie.VideoS3Key);
-                if (deleteS3MovieResult != Constants.SUCCESS)
-                {
-                    return deleteS3MovieResult;
-                }
-                    
-                string deleteS3ThumbnailResult = await S3Service.DeleteThumbnail(movie.ThumbnailS3Key);
-                if (deleteS3ThumbnailResult != Constants.SUCCESS)
-                {
-                    return deleteS3ThumbnailResult;
-                }
-
-                // Delete comments, ratings items for the movie, and delete movie meta data item
-                string deleteMovieDataResult = await DynamoDBService.DeleteMovie(movie);
-                if (deleteMovieDataResult != Constants.SUCCESS)
-                {
-                    return deleteMovieDataResult;
-                }
-
-                return Constants.SUCCESS;
-            }
-            catch (Exception e)
-            {
-                return $"{Constants.ERROR} while deleting movie: {e.Message}";
-            }
-        }
 
         //Error action to display errors in Error page.
         public IActionResult Error(string? errorMessage)
