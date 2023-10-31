@@ -34,6 +34,12 @@ a {
         }
 }
 
+.form-floating > .form-control:focus, .form-floating > .form-control:not(:placeholder-shown) {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
 .success-banner {
     background-color: #4CAF50;
     color: white;
@@ -310,7 +316,7 @@ a {
     padding-bottom: 10px;
 }
 
-label {
+.form-group label {
     padding-top: 10px;
     padding-bottom: 10px;
 }
