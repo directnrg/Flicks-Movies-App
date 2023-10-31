@@ -26,6 +26,15 @@ body {
     position: relative; 
 }
 
+.error-banner {
+    background-color: #CD2F43;
+    color: white;
+    padding: 12px 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+    position: relative;
+}
+
 .close-btn {
     position: absolute; 
     right: 10px; 
@@ -118,7 +127,7 @@ body {
             transform: rotateY(180deg);
         }
 
-        /*To display the stars only based on user rating*/
+ /*To display the stars only based on user rating*/
 .star-container-display {
     position: relative;
     transform: rotateY(180deg);
@@ -172,3 +181,47 @@ body {
         transform: translateY(-5px); /* slight lift on hover */
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* intensified shadow on hover */
     }
+}
+
+/* index (search) page table style */
+.movie-list-table {
+    width: 100%,
+}
+
+/* thumbnail */
+.movie-list-table th:nth-child(1),
+.movie-list-table td:nth-child(1) {
+    width: 15%;
+}
+
+/* title */
+.movie-list-table th:nth-child(2),
+.movie-list-table td:nth-child(2) {
+    width: 35%;
+}
+
+/* genre */
+.movie-list-table th:nth-child(3),
+.movie-list-table td:nth-child(3) {
+    width: 35%;
+}
+
+/* avg rating */
+.movie-list-table th:nth-child(4),
+.movie-list-table td:nth-child(4) {
+    width: 5%;
+}
+
+.movie-list-table .thumbnail-img {
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.detail.thumbnail-img {
+    padding: 20px;
+    max-width: 50%;
+}

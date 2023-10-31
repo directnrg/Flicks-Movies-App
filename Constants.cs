@@ -17,12 +17,14 @@
 
         public static char FORWARD_SLASH = '/';
         public static char COMMA = ',';
+        public static string COMMA_DELIMITER = ", ";
         public static string PERIOD = ".";
         public static string HASHTAG = "#";
 
         // msg related
         public static string SUCCESS = "SUCCESS";
         public static string ERROR = "ERROR";
+        public static string NOT_AUTHORIZED_MSG = "This action is not authorized for this user.";
 
         // bucket name
         public static string MOVIE_BUCKET_NAME = "comp306-lab3-movies-sk";
@@ -45,5 +47,8 @@
         public static string TEMP_COMMENTS = "Comments";
         public static string TEMP_RATINGS = "Ratings";
 
+        // action
+        public static string UPDATE = "update";
+        public static string DELETE = "delete";
     }
 }

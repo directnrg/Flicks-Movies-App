@@ -22,6 +22,14 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             _userManager = userManager;
         }
 
+        /* convert images in memory form to base64 string to display */
+        public string ConvertToBase64(MemoryStream memoryStream)
+        {
+            byte[] bytes = memoryStream.ToArray();
+            string base64String = Convert.ToBase64String(bytes);
+            return base64String;
+        }
+        
         // GET: Movie
         public async Task<ActionResult> Index(string? genre, double? minRate, double? maxRate)
         {
@@ -48,7 +56,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // set min, max default if not given
                         minRate = (minRate == null) ? 0 : minRate;
-                        maxRate = (maxRate == null) ? 10 : maxRate;
+                        maxRate = (maxRate == null) ? 5 : maxRate;
                         moviesByRating = await DynamoDBService.GetMoviesByAvgRating((double)minRate, (double)maxRate);
 
                         // search with ratings only
@@ -68,9 +76,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         // search with genres only
                         model.Movies = moviesByGenre;
-                    }
+                    }                                    
+                }
 
-                    
+                foreach(MovieModel movie in model.Movies)
+                {
+                    // get thumbnails
+                    MemoryStream thumbnailMemory = await S3Service.GetThumbnail(movie.ThumbnailS3Key);
+                    string base64Image = ConvertToBase64(thumbnailMemory);
+                    movie.ThumbnailBase64 = base64Image;
                 }
             }
             catch (Exception ex)
@@ -107,10 +121,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 // set genre with selected genres
                 foreach (string genre in model.SelectedGenres)
                 {
-                    newMovie.Genre += genre + Constants.COMMA;
+                    newMovie.Genre += genre + Constants.COMMA_DELIMITER;
                 }
 
-                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 1); // remove extra comma
+                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 2); // remove extra comma
 
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 
@@ -134,8 +148,9 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = thumbnailUploadResult });
                 }
                 newMovie.ThumbnailS3Key = thumbnailKey;
+                newMovie.ThumbnailContentType = thumbnailFile.ContentType;
 
-                // add updatedMovie data item
+                // add movie data item
                 string movieUploadResult = await DynamoDBService.AddMovieItem(newMovie);
                 if (movieUploadResult.Contains(Constants.ERROR))
                 {
@@ -145,7 +160,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while uploading updatedMovie: {ex.Message}" });
+                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while uploading movie: {ex.Message}" });
             }
         }
 
@@ -157,6 +172,12 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             try
             {
                 MovieModel movie = await DynamoDBService.GetMovieById(movieId);
+
+                // get thumbnail
+                MemoryStream thumbnailMemory = await S3Service.GetThumbnail(movie.ThumbnailS3Key);
+                string base64Image = ConvertToBase64(thumbnailMemory);
+                movie.ThumbnailBase64 = base64Image;
+
                 model.Movie = movie;
 
                 model.ReviewViewModel = new()
@@ -275,24 +296,55 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         }
 
         //Syncronous
-        //Movie/UpdateGet
-        public ActionResult UpdateGet(UpdateViewModel model)
+        //Movie/GetAction
+        public async Task<ActionResult> GetActionAsync(UpdateViewModel model, string action)
         {
             try
             {
-                if (model == null)
+                if (model == null || model.Movie == null)
                 {
                     return NotFound($"Movie Object not Found.");
                 }
-               
+
+                if (model.Movie.UserId != _userManager.GetUserId(HttpContext.User))
+                {
+                    throw new Exception(message: Constants.NOT_AUTHORIZED_MSG);
+                }
+
+                if (action == Constants.UPDATE)
+                {
+                    // get thumbnail
+                    MemoryStream thumbnailMemory = await S3Service.GetThumbnail(model.Movie.ThumbnailS3Key);
+                    string base64Image = ConvertToBase64(thumbnailMemory);
+                    model.Movie.ThumbnailBase64 = base64Image;
+                    return View("Update", model);
+                }
+                else if (action == Constants.DELETE)
+                {
+                    string  deleteResult = await Delete(model.Movie);
+                    if (deleteResult.Contains(Constants.ERROR))
+                    {
+                        TempData["ErrorMessage"] = deleteResult;
+                    }
+                    else
+                    {
+                        TempData["SuccessMessage"] = "Movie deleted successfully!";
+                    }
+                    
+                    return RedirectToAction(nameof(UserMovies));
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Details));
+                }
+                
             }
             catch (Exception ex)
             {
-                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while getting the updatedMovie update: {ex.Message}" });
+                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while getting the movie {action}: {ex.Message}" });
             }
             return View(Constants.VIEW_UPDATE, model);
         }
-
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -301,6 +353,15 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
         {
             try
             {
+                if (model == null || model.Movie == null)
+                {
+                    return BadRequest("Movie Object is required");
+                }
+
+                if(model.Movie.UserId != _userManager.GetUserId(HttpContext.User))
+                {
+                    throw new Exception(message:Constants.NOT_AUTHORIZED_MSG);
+                }
 
                 // set genre with selected genres
                 model.Movie.Genre = model.ConvertSelectedGenresToString();
@@ -309,11 +370,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 //adding the user ID value before processing the update
                 var userId = _userManager.GetUserId(User);
                 model.Movie.UserId = userId;
-
-                if (model == null)
-                {
-                    return BadRequest("Movie Object is required");
-                }
              
                 await DynamoDBService.UpdateMovie(model.Movie);
 
@@ -322,28 +378,52 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} Updating the updatedMovie with ID: {model.Movie.MovieId} -- {ex.Message}" });
+                return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} Updating the movie with ID: {model.Movie.MovieId} -- {ex.Message}" });
             }
         }
 
-        // GET: Movie/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Movie/Delete/5
+        // POST: Movie/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<string> Delete(MovieModel movie)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (movie == null)
+                {
+                    return $"Movie Object not Found.";
+                }
+
+                if (movie.UserId != _userManager.GetUserId(HttpContext.User))
+                {
+                    throw new Exception(message: Constants.NOT_AUTHORIZED_MSG);
+                }
+
+                // Delete s3 bucket obj(vid, thumbnail) 
+                string deleteS3MovieResult = await S3Service.DeleteMovie(movie.VideoS3Key);
+                if (deleteS3MovieResult != Constants.SUCCESS)
+                {
+                    return deleteS3MovieResult;
+                }
+                    
+                string deleteS3ThumbnailResult = await S3Service.DeleteThumbnail(movie.ThumbnailS3Key);
+                if (deleteS3ThumbnailResult != Constants.SUCCESS)
+                {
+                    return deleteS3ThumbnailResult;
+                }
+
+                // Delete comments, ratings items for the movie, and delete movie meta data item
+                string deleteMovieDataResult = await DynamoDBService.DeleteMovie(movie);
+                if (deleteMovieDataResult != Constants.SUCCESS)
+                {
+                    return deleteMovieDataResult;
+                }
+
+                return Constants.SUCCESS;
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return $"{Constants.ERROR} while deleting movie: {e.Message}";
             }
         }
 
