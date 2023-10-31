@@ -14,7 +14,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string Timestamp { get; set; }
         public string Type { get; set; }
 
-        // rating
         public RatingModel(string movieIdwithNoPrefix, string userId, double rating)
         {
             Type = Constants.PREFIX_RATING;
