@@ -9,7 +9,7 @@
 {
     <div class="success-banner" id="successBanner">
         @TempData["SuccessMessage"]
-        <button class="close-btn" onclick="closeBanner()">x</button>
+        <button class="close-btn" onclick="closeBanner('successBanner')">x</button>
     </div>
 }
 
@@ -33,14 +33,34 @@
         <span asp-validation-for="Movie.Directors" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-       <label class="control-label">Genre</label><br />
-        @foreach (MovieGenre genre in Enum.GetValues(typeof(MovieGenre)))
-        {
-            <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" checked="@(Model.Movie.Genre.Contains(MovieGenreExtension.EnumToReadableString(genre)) ? true : false)" />
-            <label class="form-check-label" for="@(genre)">@MovieGenreExtension.EnumToReadableString(genre)</label>
-        }
-    </div>
+   <div class="form-group">
+    <label class="control-label">Genre</label><br />
+    <table class="no-border-table">
+        <tbody>
+            <tr>
+                @{
+                    int count = 0;
+                }
+                @foreach (MovieGenre genre in Enum.GetValues(typeof(MovieGenre)))
+                {
+                    if (count > 0 && count % 5 == 0)
+                    {
+                        @:</tr><tr>
+                    }
+
+                    <td>
+                        <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" checked="@(Model.Movie.Genre.Contains(MovieGenreExtension.EnumToReadableString(genre)) ? true : false)" />
+                        <label class="form-check-label" for="@(genre)">@MovieGenreExtension.EnumToReadableString(genre)</label>
+                    </td>
+
+                    count++;
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
 
     <div class="form-group">
         <label asp-for="Movie.ReleasedDate">Release Date</label>

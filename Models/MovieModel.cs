@@ -20,7 +20,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string VideoS3Key { get; set; }
         public string Timestamp { get; set; }
         public string Type { get; set; }
-        public string? ThumbnailContentType { get; set; } // extension info
+        public string? ThumbnailContentType { get; set; } // thumbnail file extension info
 
         [DynamoDBIgnore]
         public IFormFile? Thumbnail { get; set; }
