@@ -17,9 +17,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             context = new DynamoDBContext(AWSClients.dynamoClient);
         }
 
-        /*
-         * get the list of movie meta data items
-         */
+        /* get the list of movie meta data items */
         internal static async Task<List<MovieModel>> GetAllMovies()
         {
             QueryFilter filter = new();
@@ -75,19 +73,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             return movies;
         }
 
-        internal static async Task<string> AddMovieItem(MovieModel movie)
-        {
-            try
-            {
-                await context.SaveAsync(movie);
-                return Constants.SUCCESS;
-            }
-            catch (Exception ex)
-            {
-                return $"{Constants.ERROR} while adding movie data: {ex.Message}";
-            }
-        }
-
         internal static async Task<MovieModel> GetMovieById(string movieId)
         {
             try
@@ -100,6 +85,19 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             catch
             {
                 throw;
+            }
+        }
+
+        internal static async Task<string> AddMovieItem(MovieModel movie)
+        {
+            try
+            {
+                await context.SaveAsync(movie);
+                return Constants.SUCCESS;
+            }
+            catch (Exception ex)
+            {
+                return $"{Constants.ERROR} while adding movie data: {ex.Message}";
             }
         }
 
@@ -143,6 +141,38 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
                 throw;
             }
 
+        }
+
+        internal static async Task<string> DeleteMovie(MovieModel movieToDelete)
+        {
+            try
+            {
+                string movieId = movieToDelete.MovieId.Substring(Constants.PREFIX_MOVIE.Length);
+
+                // delete ratings
+                List<RatingModel> ratings = await GetAllRatingsAsync(movieId);
+
+                foreach (RatingModel rating in ratings)
+                {
+                    await context.DeleteAsync(rating);
+                }
+
+                // delete comments
+                List<CommentModel> comments = await GetAllCommentsAsync(movieId);
+
+                foreach (CommentModel comment in comments)
+                {
+                    await context.DeleteAsync(comment);
+                }
+
+                // delete movie meta data 
+                await context.DeleteAsync(movieToDelete);
+                return Constants.SUCCESS;
+            }
+            catch (Exception ex)
+            {
+                return $"{Constants.ERROR} while deleting movie data: {ex.Message}";
+            }
         }
 
         internal static async Task<string> AddCommentItem(CommentModel comment)
@@ -206,38 +236,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
             catch (Exception ex)
             {
                 return $"{Constants.ERROR} while adding rating data: {ex.Message}";
-            }
-        }
-
-        internal static async Task<string> DeleteMovie(MovieModel movieToDelete)
-        {
-            try
-            {
-                string movieId = movieToDelete.MovieId.Substring(Constants.PREFIX_MOVIE.Length);
-
-                // delete ratings
-                List<RatingModel> ratings = await GetAllRatingsAsync(movieId);
-
-                foreach (RatingModel rating in ratings)
-                {
-                    await context.DeleteAsync(rating);
-                }
-
-                // delete comments
-                List<CommentModel> comments = await GetAllCommentsAsync(movieId);
-
-                foreach (CommentModel comment in comments)
-                {
-                    await context.DeleteAsync(comment);
-                }
-
-                // delete movie meta data 
-                await context.DeleteAsync(movieToDelete);
-                return Constants.SUCCESS;
-            }
-            catch (Exception ex)
-            {
-                return $"{Constants.ERROR} while deleting movie data: {ex.Message}";
             }
         }
 

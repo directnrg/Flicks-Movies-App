@@ -13,6 +13,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             _logger = logger;
         }
 
+        // redirect to search (index) page of Movie controller
         public IActionResult Index()
         {
             return RedirectToAction("Index", "Movie");

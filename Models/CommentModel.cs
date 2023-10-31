@@ -14,8 +14,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Models
         public string Timestamp { get; set; }
         public string Type { get; set; }
 
-
-        // comment
         public CommentModel(string movieIdwithNoPrefix, string userId, string comment)
         {
             Type = Constants.PREFIX_COMMENT;
