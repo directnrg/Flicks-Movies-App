@@ -51,7 +51,7 @@
         public static readonly string UPDATE = "update";
         public static readonly string DELETE = "delete";
 
-        //
+        // session
         public static readonly string SESSION_THUMB64 = "ThumbnailBase64";
         public static readonly string SESSION_CONTENT_TYPE = "ThumbnailContentType";
     }

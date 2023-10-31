@@ -295,54 +295,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
             }
         }
 
-        //Movie/GetAction
-        //public async Task<ActionResult> GetActionAsync(UpdateViewModel model, string action)
-        //{
-        //    try
-        //    {
-        //        if (model == null || model.Movie == null)
-        //        {
-        //            return NotFound($"Movie Object not Found.");
-        //        }
-
-        //        if (model.Movie.UserId != _userManager.GetUserId(HttpContext.User))
-        //        {
-        //            throw new Exception(message: Constants.NOT_AUTHORIZED_MSG);
-        //        }
-
-        //        if (action == Constants.UPDATE)
-        //        {
-        //            // get thumbnail
-        //            MemoryStream thumbnailMemory = await S3Service.GetThumbnail(model.Movie.ThumbnailS3Key);
-        //            string base64Image = ConvertToBase64(thumbnailMemory);
-        //            model.Movie.ThumbnailBase64 = base64Image;
-        //            return View("Update", model);
-        //        }
-        //        else if (action == Constants.DELETE)
-        //        {
-        //            string  deleteResult = await Delete(model.Movie);
-        //            if (deleteResult.Contains(Constants.ERROR))
-        //            {
-        //                TempData["ErrorMessage"] = deleteResult;
-        //            }
-        //            else
-        //            {
-        //                TempData["SuccessMessage"] = "Movie deleted successfully!";
-        //            }
-
-        //            return RedirectToAction(nameof(UserMovies));
-        //        }
-        //        else
-        //        {
-        //            return RedirectToAction(nameof(Details));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return RedirectToAction(Constants.VIEW_ERROR, new { errorMessage = $"{Constants.ERROR} while getting the movie {action}: {ex.Message}" });
-        //    }
-        //}
-
         public async Task<ActionResult> UpdateMovie(string movieId)
         {
             if (string.IsNullOrWhiteSpace(movieId))
@@ -350,7 +302,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 return NotFound($"Movie Object not Found.");
             }
 
-            var userId = _userManager.GetUserId(HttpContext.User);
+            string userId = _userManager.GetUserId(HttpContext.User);
             MovieModel movieToUpdate = await DynamoDBService.GetMovieById(movieId);
 
             if (movieToUpdate.UserId != userId)
@@ -384,8 +336,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     return NotFound($"Movie Object not Found.");
                 }
 
-                var userId = _userManager.GetUserId(HttpContext.User);
-                var movie = await DynamoDBService.GetMovieById(movieId);
+                string userId = _userManager.GetUserId(HttpContext.User);
+                MovieModel movie = await DynamoDBService.GetMovieById(movieId);
 
                 if (movie.UserId != userId)
                 {
@@ -442,7 +394,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //Movie/UpdatePost
+        // POST: Movie/UpdatePost
         public async Task<ActionResult> UpdatePost(UpdateViewModel model)
         {
             try
