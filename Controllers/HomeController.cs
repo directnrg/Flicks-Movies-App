@@ -15,7 +15,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Movie");
         }
 
         public IActionResult Privacy()
