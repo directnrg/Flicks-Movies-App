@@ -54,6 +54,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3
                 options.SlidingExpiration = true;
 
             });
+
+            //adding session to store sensitive or ignored data from database.
+            builder.Services.AddSession();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -70,6 +74,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3
                 app.UseHsts();
             }
 
+            app.UseSession();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
