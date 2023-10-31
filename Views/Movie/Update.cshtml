@@ -14,9 +14,15 @@
 }
 
 <h2>Update Movie</h2>
+      
 <form asp-action="UpdatePost" method="post">
+    <img class="detail thumbnail-img" src="data:@Model.Movie.ThumbnailContentType;base64,@Model.Movie.ThumbnailBase64" alt="Thumbnail">
+  
     <!--To pass the movieId in form-->
+    <input type="hidden" asp-for="Movie.ThumbnailBase64"/>
+    <input type="hidden" asp-for="Movie.ThumbnailContentType"/>
     <input type="hidden" asp-for="Movie.MovieId"/>
+    <input type="hidden" asp-for="Movie.UserId"/>
     <div class="form-group">
         <label asp-for="Movie.Title">Title</label>
         <input asp-for="Movie.Title" class="form-control" />

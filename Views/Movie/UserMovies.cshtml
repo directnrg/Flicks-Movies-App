@@ -2,6 +2,20 @@
 
 <h2>Your Uploaded Movies</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="success-banner" id="successBanner">
+        @TempData["SuccessMessage"]
+        <button class="close-btn" onclick="closeBanner('successBanner')">x</button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="error-banner" id="errorBanner">
+        @TempData["ErrorMessage"]
+        <button class="close-btn" onclick="closeBanner('errorBanner')">x</button>
+    </div>
+}
 <table class="table">
     <thead>
         <tr>
@@ -15,7 +29,7 @@
     <tbody>
         @foreach (var movie in Model.Movies)
         {
-            <form method="post" asp-controller="Movie" asp-action="UpdateGet">
+            <form method="post" asp-controller="Movie" asp-action="GetAction">
             <tr>
                 <td>@movie.Title</td>
                 <td>@movie.Genre</td>
@@ -25,13 +39,21 @@
                     <input type="hidden" asp-for="@movie.MovieId" name="Movie.MovieId" />
                     <input type="hidden" asp-for="@movie.Title" name="Movie.Title" />
                     <input type="hidden" asp-for="@movie.Genre" name="Movie.Genre" />
+                    <input type="hidden" asp-for="@movie.ThumbnailS3Key" name="Movie.ThumbnailS3Key" />
+                    <input type="hidden" asp-for="@movie.VideoS3Key" name="Movie.VideoS3Key" />
+                    <input type="hidden" asp-for="@movie.UserId" name="Movie.UserId" />
+                    <input type="hidden" asp-for="@movie.AvgRating" name="Movie.AvgRating" />
+                    <input type="hidden" asp-for="@movie.NumOfRatings" name="Movie.NumOfRatings" />
+
                     <!--This hidden input handles 1 or many directors-->
                         @foreach (var director in movie.Directors)
                         {
                         <input type="hidden" name="Movie.Directors" value="@director" />
                         }
                     <input type="hidden" asp-for="@movie.ReleasedDate" name="Movie.ReleasedDate" />
-                    <button type="submit" class="btn btn-primary">Edit</button>
+                    <button class="btn btn-primary"><a asp-action="Details" asp-route-movieId="@movie.MovieId.Substring(6)">Details</a></button>
+                    <button type="submit" name="action" value=@Constants.UPDATE class="btn btn-primary">Update</button>
+                    <button type="submit" name="action" value=@Constants.DELETE class="btn btn-primary">Delete</button>
                 </td>
             </tr>
             </form>

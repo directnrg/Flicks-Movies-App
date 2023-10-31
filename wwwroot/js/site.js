@@ -9,8 +9,8 @@ setTimeout(function () {
 }, 5000);
 
 // Close banner function
-function closeBanner() {
-    var banner = document.getElementById("successBanner");
+function closeBanner(id) {
+    var banner = document.getElementById(id);
     if (banner) {
         banner.style.display = "none";  // Hide the banner
     }
