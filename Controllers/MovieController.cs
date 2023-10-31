@@ -192,6 +192,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
 
                 foreach (CommentModel comment in model.ReviewViewModel.Comments)
                 {
+                    // check if comment already exists and it was written within 1d
                     DateTime commentTime = DateTime.Parse(comment.Timestamp);
                     if (comment.UserId == _userManager.GetUserId(User))
                     {
@@ -212,16 +213,11 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                     {
                         model.ReviewViewModel.IsEditBtnHidden?.Add(true);
                     }
-                }
 
-                if (model.ReviewViewModel.IsEditBtnHidden != null)
-                {
-                    foreach (var item in model.ReviewViewModel.IsEditBtnHidden)
-                    {
-                        Debug.WriteLine($"btnHidden value: {item}");
-                    }
+                    // add users names
+                    CustomUser user = await _userManager.FindByIdAsync(comment.UserId);
+                    model.ReviewViewModel.NamesOfUsers?.Add((user==null) ? "" : user.FullName);
                 }
-        
 
                 return View(model);
             }

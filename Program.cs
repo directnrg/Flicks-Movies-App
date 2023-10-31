@@ -87,10 +87,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}");
 
-            //app.MapControllerRoute(name: "blog",
-            //    pattern: "blog/{*article}",
-            //    defaults: new { controller = "Blog", action = "Article" });
-
             app.MapRazorPages();
 
             DotEnv.Load();

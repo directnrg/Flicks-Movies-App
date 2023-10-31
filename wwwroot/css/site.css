@@ -312,7 +312,7 @@ a {
 }
 
 .form-group {
-    padding-top:10px;
+    padding-top: 10px;
     padding-bottom: 10px;
 }
 
@@ -325,3 +325,7 @@ a {
     background: #574778;
     border: none;
 }
+
+    .btn-primary:hover {
+        background: #bcb5c9;
+    }
