@@ -326,6 +326,6 @@ a {
     border: none;
 }
 
-    .btn-primary:hover {
+    .btn-primary:hover, .btn-primary:focus {
         background: #bcb5c9;
     }
