@@ -30,10 +30,8 @@
                         }
                     </div>
                 </div>
-                <!-- Display Rating Number -->
-                <div>@Model.Ratings[i].Rating</div>
                 <!-- Display Comment -->
-                <div>@Model.Comments[i].Comment</div>
+                <div class="text-dark">@Model.Comments[i].Comment</div>
                 <div>
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ReviewModal" @(Model.IsEditBtnHidden?[i] == true ? "hidden" : "")>
