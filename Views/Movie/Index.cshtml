@@ -40,7 +40,7 @@
                             <div class="container__items">
                                 @for (int j = 5; j >= 1; j--)
                                 {
-                                    <input type="radio" name="Rating_@(movie.MovieId)" id="st@(j)_@(movie.MovieId)" @(j == (int)Math.Floor(movie.AvgRating) ? "checked" : "")>
+                                    <input type="radio" name="Rating_@(movie.MovieId)" id="st@(j)_@(movie.MovieId)" @(j == (int)Math.Round(movie.AvgRating) ? "checked" : "")>
                                     <div class="star-stroke">
                                         <div class="star-fill"></div>
                                     </div>

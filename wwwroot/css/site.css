@@ -16,17 +16,17 @@ html {
 body {
     color: #222;
     background: #fff;
-    font: 100% system-ui;
+    font: 100%;
 }
 
 a {
     color: #0033cc;
 }
 
-@media (prefers-color-scheme: dark) {
+@media {
     body {
         color: #eee;
-        background: #121212;
+        background: #030404;
     }
 
         body a {
@@ -100,63 +100,63 @@ navbar a {
     transform: rotateY(180deg);
 }
 
-    .star-container .container__items {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0 .5em;
-        width: 100%;
-        height: 100%;
+.star-container .container__items {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0 .5em;
+    width: 100%;
+    height: 100%;
+}
+
+    .star-container .container__items input {
+        display: none;
     }
 
-        .star-container .container__items input {
-            display: none;
+    .star-container .container__items label {
+        width: 20%;
+        aspect-ratio: 1;
+        cursor: pointer;
+    }
+
+        .star-container .container__items label .star-stroke {
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 100%;
+            background: var(--secondary-colour);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
         }
 
-        .star-container .container__items label {
-            width: 20%;
-            aspect-ratio: 1;
-            cursor: pointer;
-        }
-
-            .star-container .container__items label .star-stroke {
-                display: grid;
-                place-items: center;
-                width: 100%;
-                height: 100%;
-                background: var(--secondary-colour);
+            .star-container .container__items label .star-stroke .star-fill {
+                width: 70%;
+                aspect-ratio: 1;
+                background: var(--primary-colour);
                 clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
             }
 
-                .star-container .container__items label .star-stroke .star-fill {
-                    width: 70%;
-                    aspect-ratio: 1;
-                    background: var(--primary-colour);
-                    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-                }
+    .star-container .container__items input:hover ~ label .star-stroke, .star-container .container__items input:checked ~ label .star-stroke {
+        background: var(--star-colour);
+    }
 
-        .star-container .container__items input:hover ~ label .star-stroke, .star-container .container__items input:checked ~ label .star-stroke {
+        .star-container .container__items input:checked ~ label .star-stroke .star-fill {
             background: var(--star-colour);
         }
 
-            .star-container .container__items input:checked ~ label .star-stroke .star-fill {
-                background: var(--star-colour);
-            }
-
-        .star-container .container__items label:hover .label-description::after {
-            content: attr(data-content);
-            position: fixed;
-            left: 0;
-            right: 0;
-            margin-top: 5px;
-            margin-bottom: 1em;
-            width: 100%;
-            height: 10px;
-            color: #000000;
-            text-align: center;
-            font-size: 2rem;
-            transform: rotateY(180deg);
-        }
+    .star-container .container__items label:hover .label-description::after {
+        content: attr(data-content);
+        position: fixed;
+        left: 0;
+        right: 0;
+        margin-top: 5px;
+        margin-bottom: 1em;
+        width: 100%;
+        height: 10px;
+        color: #000000;
+        text-align: center;
+        font-size: 2rem;
+        transform: rotateY(180deg);
+    }
 
 /*To display the stars only based on user rating*/
 .star-container-display {
@@ -319,4 +319,9 @@ a {
 .form-group label {
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+.btn-primary {
+    background: #574778;
+    border: none;
 }
