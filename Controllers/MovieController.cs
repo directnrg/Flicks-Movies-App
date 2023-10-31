@@ -204,6 +204,10 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                             int idx = model.ReviewViewModel.Comments.IndexOf(comment);
                             model.Rating = model.ReviewViewModel.Ratings.ElementAt(idx).Rating;  
                         }
+                        else
+                        {
+                            model.ReviewViewModel.IsEditBtnHidden?.Add(true);
+                        }
                     } else
                     {
                         model.ReviewViewModel.IsEditBtnHidden?.Add(true);
