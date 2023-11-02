@@ -3,6 +3,8 @@ using Amazon.DynamoDBv2;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.SimpleSystemsManagement;
+using System.Diagnostics;
+using System.Net;
 
 namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 {
@@ -22,20 +24,38 @@ namespace _301153142_301137955_Soto_Ko_Lab3.AWS
 
         static AWSClients()
         {
+            try
+            {
+                AwsAccessId = Environment.GetEnvironmentVariable(AccessIdPropertyName)!.Trim();
+                AwsAccessKey = Environment.GetEnvironmentVariable(AccessKeyPropertyName)!.Trim();
 
-            AwsAccessId = Environment.GetEnvironmentVariable(AccessIdPropertyName)!.Trim();
-            AwsAccessKey = Environment.GetEnvironmentVariable(AccessKeyPropertyName)!.Trim();
-            
-            BasicAWSCredentials credentials = new(
-                AwsAccessId,
-                AwsAccessKey
-            );
+                BasicAWSCredentials credentials = new(
+                                AwsAccessId,
+                                AwsAccessKey
+                            );
 
-            SystemsManagementClient = new(credentials, caCentral);
+                SystemsManagementClient = new(credentials, caCentral);
 
-            dynamoClient = new(credentials, caCentral);
+                dynamoClient = new(credentials, caCentral);
 
-            s3Client = new(AwsAccessId, AwsAccessKey, caCentral);
+                s3Client = new(AwsAccessId, AwsAccessKey, caCentral);
+
+            } catch (NullReferenceException)
+            {
+                try
+                {
+                    SystemsManagementClient = new(caCentral);
+
+                    dynamoClient = new(caCentral);
+
+                    s3Client = new(caCentral);
+
+                } catch (Exception ex)
+                {
+                    Debug.WriteLine($"Unable to create Client using IAM Role. {ex.Message}");
+                }
+
+            }   
         }
     }
 }
