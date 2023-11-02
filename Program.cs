@@ -3,6 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
 using dotenv.net;
+using Amazon.Runtime;
+using Amazon.SimpleSystemsManagement.Model;
+using Amazon.SimpleSystemsManagement;
+using _301153142_301137955_Soto_Ko_Lab3.AWS;
+using System.Diagnostics;
 
 namespace _301153142_301137955_Soto_Ko_Lab3
 {
@@ -10,13 +15,17 @@ namespace _301153142_301137955_Soto_Ko_Lab3
     {
         public static void Main(string[] args)
         {
+            DotEnv.Load();
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("Connection2RDS") ?? throw new InvalidOperationException("Connection string 'ConnectionTo2RDS' not found.");
-            
+            //var connectionString = builder.Configuration.GetConnectionString("Connection2RDS") ?? throw new InvalidOperationException("Connection string 'ConnectionTo2RDS' not found.");
+
+            Debug.WriteLine($"{ParameterStore.GetConnectionStringFromParameterStore().Result.Parameter.Value}");
+
             builder.Services.AddDbContext<CustomLab3Context>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(ParameterStore.GetConnectionStringFromParameterStore().Result.Parameter.Value));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<CustomUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -90,9 +99,6 @@ namespace _301153142_301137955_Soto_Ko_Lab3
                 pattern: "{controller=Home}/{action=Index}");
 
             app.MapRazorPages();
-
-            DotEnv.Load();
-
             app.Run();
         }
     }
