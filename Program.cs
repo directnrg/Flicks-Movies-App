@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
 using dotenv.net;
 
@@ -12,7 +13,8 @@ namespace _301153142_301137955_Soto_Ko_Lab3
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("Connection2RDS") ?? throw new InvalidOperationException("Connection string 'ConnectionTo2RDS' not found.");
+            
             builder.Services.AddDbContext<CustomLab3Context>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();

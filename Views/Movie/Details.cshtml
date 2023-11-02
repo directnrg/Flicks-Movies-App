@@ -69,7 +69,7 @@
                             <label for="comment" class="text-black">Comment:</label>
                             <textarea class="form-control text-black" id="Comment" asp-for="Comment" value="@(Model.Comment)" required></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-stars">
                             <div class="star-container">
                                 <div class="container__items">
                                     <input type="radio" name="Rating" id="st5" value="5" @(Model.Rating==5.0 ? "checked": "")>

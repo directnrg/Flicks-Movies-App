@@ -316,6 +316,11 @@ a {
     padding-bottom: 10px;
 }
 
+.form-group-stars {
+    text-align: -webkit-center;
+    margin-bottom: 20px;
+}
+
 .form-group label {
     padding-top: 10px;
     padding-bottom: 10px;
