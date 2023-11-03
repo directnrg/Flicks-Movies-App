@@ -49,7 +49,7 @@
                     }
 
                     <td>
-                        <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" checked="@(Model.Movie.Genre.Contains(MovieGenreExtension.EnumToReadableString(genre)) ? true : false)" />
+                        <input type="checkbox" name="SelectedGenres" value="@genre" id="@(genre)" checked="@(Model.Movie.Genre.Contains(MovieGenreExtension.EnumToReadableString(genre)) ? true : false)"/>
                         <label class="form-check-label" for="@(genre)">@MovieGenreExtension.EnumToReadableString(genre)</label>
                     </td>
 

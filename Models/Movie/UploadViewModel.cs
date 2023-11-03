@@ -1,8 +1,19 @@
-﻿namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
+﻿using _301153142_301137955_Soto_Ko_Lab3.Enums;
+
+namespace _301153142_301137955_Soto_Ko_Lab3.Models.Movie
 {
     public class UploadViewModel
     {
         public MovieModel Movie { get; set; }
-        public List<string> SelectedGenres { get; set; }
+        public List<MovieGenre> SelectedGenres { get; set; }
+
+        public string ConvertSelectedGenresToString()
+        {
+            if (SelectedGenres == null || !SelectedGenres.Any())
+                return string.Empty;
+
+            IEnumerable<string> readableGenres = SelectedGenres.Select(genre => MovieGenreExtension.EnumToReadableString(genre));
+            return string.Join(Constants.COMMA_DELIMITER, readableGenres);
+        }
     }
 }

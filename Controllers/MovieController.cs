@@ -1,5 +1,6 @@
 ﻿using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
 using _301153142_301137955_Soto_Ko_Lab3.AWS;
+using _301153142_301137955_Soto_Ko_Lab3.Enums;
 using _301153142_301137955_Soto_Ko_Lab3.Models;
 using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
 using _301153142_301137955_Soto_Ko_Lab3.Models.Review;
@@ -123,13 +124,9 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
                 }
 
                 // set genre with selected genres
-                foreach (string genre in model.SelectedGenres)
-                {
-                    newMovie.Genre += genre + Constants.COMMA_DELIMITER;
-                }
-
-                newMovie.Genre = newMovie.Genre.Substring(0, newMovie.Genre.Length - 2); // remove extra comma
-
+           
+                newMovie.Genre = model.ConvertSelectedGenresToString();
+            
                 newMovie.Directors = model.Movie.Directors.ElementAt(0).Split(Constants.COMMA).Select(director => director.Trim()).ToList();
 
                 // save and set s3 vid, thumbnail 
