@@ -16,7 +16,7 @@
 
 #appsettings
 appsettings.json
-appsettings.Developer.json
+**/appsettings.Developer.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
