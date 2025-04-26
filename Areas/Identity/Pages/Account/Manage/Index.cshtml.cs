@@ -6,12 +6,12 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
+using Flicks_App.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Pages.Account.Manage
+namespace Flicks_App.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {

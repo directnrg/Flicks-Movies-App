@@ -1,8 +1,8 @@
-﻿using _301153142_301137955_Soto_Ko_Lab3.Models;
+﻿using Flicks_App.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
+namespace Flicks_App.Controllers
 {
     public class HomeController : Controller
     {

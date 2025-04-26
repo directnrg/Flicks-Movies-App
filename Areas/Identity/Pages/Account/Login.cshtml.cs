@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
+using Flicks_App.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Pages.Account
+namespace Flicks_App.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {

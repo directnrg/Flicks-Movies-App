@@ -1,6 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Models
+namespace Flicks_App.Models
 {
     [DynamoDBTable("Movie")]
     public class MovieModel

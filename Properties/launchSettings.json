@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "_301153142_301137955_Soto_Ko_Lab3": {
+    "Flicks_App": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

@@ -1,4 +1,4 @@
-﻿namespace _301153142_301137955_Soto_Ko_Lab3.Enums
+﻿namespace Flicks_App.Enums
 {
     public enum MovieGenre
     {

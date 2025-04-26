@@ -1,4 +1,4 @@
-﻿using _301153142_301137955_Soto_Ko_Lab3.Models;
+﻿using Flicks_App.Models;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -6,7 +6,7 @@ using Amazon.DynamoDBv2.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.AWS
+namespace Flicks_App.AWS
 {
     public static class DynamoDBService
     {

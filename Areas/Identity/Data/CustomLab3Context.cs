@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
+namespace Flicks_App.Areas.Identity.Data;
 
-public class CustomLab3Context : IdentityDbContext<CustomUser>
+public class FlicksDBContext : IdentityDbContext<CustomUser>
 {
-    public CustomLab3Context(DbContextOptions<CustomLab3Context> options)
+    public FlicksDBContext(DbContextOptions<FlicksDBContext> options)
         : base(options)
     {
     }

@@ -6,7 +6,7 @@ using Amazon.SimpleSystemsManagement;
 using System.Diagnostics;
 using System.Net;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.AWS
+namespace Flicks_App.AWS
 {
     public static class AWSClients
     {

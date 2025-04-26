@@ -1,9 +1,9 @@
-﻿using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
-using _301153142_301137955_Soto_Ko_Lab3.AWS;
-using _301153142_301137955_Soto_Ko_Lab3.Enums;
-using _301153142_301137955_Soto_Ko_Lab3.Models;
-using _301153142_301137955_Soto_Ko_Lab3.Models.Movie;
-using _301153142_301137955_Soto_Ko_Lab3.Models.Review;
+﻿using Flicks_App.Areas.Identity.Data;
+using Flicks_App.AWS;
+using Flicks_App.Enums;
+using Flicks_App.Models;
+using Flicks_App.Models.Movie;
+using Flicks_App.Models.Review;
 using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Controllers
+namespace Flicks_App.Controllers
 {
     [Authorize]
     public class MovieController : Controller

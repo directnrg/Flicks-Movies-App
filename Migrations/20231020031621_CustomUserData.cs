@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
+namespace Flicks_App.Migrations
 {
     public partial class CustomUserData : Migration
     {

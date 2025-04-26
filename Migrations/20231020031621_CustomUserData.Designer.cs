@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using _301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data;
+using Flicks_App.Areas.Identity.Data;
 
 #nullable disable
 
-namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
+namespace Flicks_App.Migrations
 {
-    [DbContext(typeof(CustomLab3Context))]
+    [DbContext(typeof(FlicksDBContext))]
     [Migration("20231020031621_CustomUserData")]
     partial class CustomUserData
     {
@@ -24,7 +24,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("_301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data.CustomUser", b =>
+            modelBuilder.Entity("Flicks_App.Areas.Identity.Data.CustomUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -241,7 +241,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("_301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data.CustomUser", null)
+                    b.HasOne("Flicks_App.Areas.Identity.Data.CustomUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -250,7 +250,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("_301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data.CustomUser", null)
+                    b.HasOne("Flicks_App.Areas.Identity.Data.CustomUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -265,7 +265,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("_301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data.CustomUser", null)
+                    b.HasOne("Flicks_App.Areas.Identity.Data.CustomUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -274,7 +274,7 @@ namespace _301153142_301137955_Soto_Ko_Lab3.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("_301153142_301137955_Soto_Ko_Lab3.Areas.Identity.Data.CustomUser", null)
+                    b.HasOne("Flicks_App.Areas.Identity.Data.CustomUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
